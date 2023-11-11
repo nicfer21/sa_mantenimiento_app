@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Topbar from "../global/TopbarComp";
 import Sidebar from "../global/SidebarComp";
@@ -12,77 +12,121 @@ import Form from "../form";
 import Line from "../line";
 import Pie from "../pie";
 import FAQ from "../faq";
+
+//Propios
+import PerfilScene from "../perfil";
+
 import Geography from "../geography";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import Calendar from "../calendar/calendar";
 import { ColorModeContext, useMode } from "../../theme.js";
-import { useEffect } from "react";
-import { getCookie, getSession, setSession } from "../../tools/cookies.js";
 import ErrorScreen from "../error";
-import { decodeToken, isExpired } from "react-jwt";
+import { decodeToken } from "react-jwt";
+import {
+  clearSession,
+  deleteCookie,
+  getCookie,
+  getSession,
+  setSession,
+} from "../../tools/cookies.js";
+import { getApi } from "../../tools/mantenimiento-api.js";
 
 const AppScreen = () => {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
   const navigate = useNavigate();
-  const token = getCookie();
-  const payload = decodeToken(token);
+  const [payload, setPayload] = useState({});
+  const cookieData = getCookie();
+  const sessionData = getSession();
 
   useEffect(() => {
-    if (getCookie() === null && getSession() === null) {
-      navigate("/login/");
-    } else if (getSession() === null) {
-      setSession(token);
-      setSession(isExpired(token), "exp");
-      console.log(payload.id_trabajadores);
-      
-    }
-  }, []);
+    const inicioApp = async () => {
+      if (cookieData === null && sessionData === null) {
+        navigate("/login/");
+      }
+      if (cookieData !== null && sessionData === null) {
+        setSession(cookieData);
+        //Toma de la cookie
+        const {
+          id_trabajadores,
+          dni,
+          nombre,
+          cargo,
+          id_usuarios,
+          nivel,
+          info,
+        } = await decodeToken(cookieData);
+        setPayload({
+          id_trabajadores: id_trabajadores,
+          dni: dni,
+          nombre: nombre,
+          cargo: cargo,
+          id_usuarios: id_usuarios,
+          nivel: nivel,
+          info: info,
+          token: cookieData,
+        });
+      }
+      if (
+        (cookieData === null && sessionData !== null) ||
+        (cookieData !== null && sessionData !== null)
+      ) {
+        //Toma de sessionStorage
+        const {
+          id_trabajadores,
+          dni,
+          nombre,
+          cargo,
+          id_usuarios,
+          nivel,
+          info,
+        } = await decodeToken(sessionData);
+        setPayload({
+          id_trabajadores: id_trabajadores,
+          dni: dni,
+          nombre: nombre,
+          cargo: cargo,
+          id_usuarios: id_usuarios,
+          nivel: nivel,
+          info: info,
+          token: sessionData,
+        });
+      }
+    };
 
-/* {id_trabajadores: 1, dni: '71852111', nombre: 'Nicolas Fernando Palomino Boncun', cargo: 'Ingeniero de Mantenimiento', info: {…}, …}
-cargo
-: 
-"Ingeniero de Mantenimiento"
-correo
-: 
-"ferboncun@gmail.com"
-createdAt
-: 
-"2023-11-08T05:23:43.840Z"
-dni
-: 
-"71852111"
-exp
-: 
-1700107271
-iat
-: 
-1699502471
-id_trabajadores
-: 
-1
-id_usuarios
-: 
-1
-info
-: 
-{titulo: 'Ingeniero Industrial', nacimiento: '2001-03-05'}
-nivel
-: 
-1
-nombre
-: 
-"Nicolas Fernando Palomino Boncun"
-updatedAt
-: 
-"2023-11-08T05:27:30.774Z" */
+    inicioApp();
+  }, [sessionData]);
+
+  useEffect(() => {
+    const prueba = async () => {
+      setSession(payload, "payload");
+      const dataRes = await getApi("/prueba/", sessionData);
+      if (!dataRes.type) {
+        clearSession();
+        deleteCookie();
+        navigate("/login/");
+        alert(dataRes.message);
+      }
+    };
+    prueba();
+
+    //Funcion ping para validar el token
+    const pingFun = setInterval(() => {
+      console.log("ping");
+      prueba();
+    }, 60000);
+
+    return () => {
+      clearInterval(pingFun);
+    };
+  }, [payload]);
 
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="app">
-          <Sidebar isSidebar={isSidebar} />
+          <Sidebar isSidebar={isSidebar} payload={payload} />
           <main className="content">
             <Topbar setIsSidebar={setIsSidebar} />
             <Routes>
@@ -97,6 +141,10 @@ updatedAt
               <Route path="/faq/" element={<FAQ />} />
               <Route path="/calendar/" element={<Calendar />} />
               <Route path="/geography/" element={<Geography />} />
+              <Route
+                path="/myprofile/"
+                element={<PerfilScene payload={payload} />}
+              />
               {/* Ruta comodin con "*" */}
               <Route path="*" element={<ErrorScreen />} />
             </Routes>

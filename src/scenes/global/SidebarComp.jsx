@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -39,11 +39,17 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   );
 };
 
-const SidebarComp = () => {
+const SidebarComp = ({ payload }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    setData(payload);
+  }, [payload]);
 
   return (
     <Box>
@@ -97,14 +103,14 @@ const SidebarComp = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Nicolas Fernando Palomino Boncun
+                  {data.nombre}
                 </Typography>
                 <Typography
                   variant="h5"
                   color={colors.greenAccent[500]}
                   sx={{ mt: "10px" }}
                 >
-                  Ingeniero de mantenimiento
+                  {data.cargo}
                 </Typography>
               </Box>
             </Box>
@@ -209,6 +215,13 @@ const SidebarComp = () => {
               title="Geography Chart"
               to="/geography"
               icon={<MapOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+             <Item
+              title="Mi Perfil"
+              to="/myprofile"
+              icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />

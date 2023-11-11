@@ -6,17 +6,21 @@ export const setCookie = (valor, nombre = "token", horas = 168) => {
 };
 
 export const getCookie = (nombre = "token") => {
-  const cookies = document.cookie.split("; ");
-  for (const cookie of cookies) {
-    const [cookieNombre, cookieValor] = cookie.split("=");
-    if (cookieNombre === nombre) {
-      return decodeURIComponent(cookieValor);
+  try {
+    const cookies = document.cookie.split("; ");
+    for (const cookie of cookies) {
+      const [cookieNombre, cookieValor] = cookie.split("=");
+      if (cookieNombre === nombre) {
+        return decodeURIComponent(cookieValor);
+      }
     }
+    return null; // Retorna null si la cookie no se encuentra
+  } catch (error) {
+    return null;
   }
-  return null; // Retorna null si la cookie no se encuentra
 };
 
-export const updateCookie = (valor, nombre = "token", horas = 168) => {
+export const updateCookie = (valor, nombre = "token", horas = 999) => {
   const fecha = new Date();
   fecha.setTime(fecha.getTime() + horas * 60 * 60 * 1000);
   const fechaUTC = fecha.toString;
@@ -34,5 +38,13 @@ export const setSession = (valor, nombre = "token") => {
 };
 
 export const getSession = (nombre = "token") => {
-  return sessionStorage.getItem(nombre);
+  const sessionData = sessionStorage.getItem(nombre);
+  if (sessionData === "null") {
+    return null;
+  }
+  return sessionData;
+};
+
+export const clearSession = () => {
+  sessionStorage.clear();
 };

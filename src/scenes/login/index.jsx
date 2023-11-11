@@ -29,6 +29,7 @@ import {
   setCookie,
   setSession,
 } from "../../tools/cookies.js";
+import md5 from "md5";
 
 import { useState } from "react";
 import { useEffect } from "react";
@@ -42,10 +43,14 @@ const Login = () => {
   const handleFormSubmit = async (values) => {
     //Inicia la carga
     setOpen(true);
+    const data = {
+      username: values.username,
+      password: md5(values.password),
+    };
     //Envia la peticion
-    const { messege, token } = await postApi("/login", values);
+    const { messege, token } = await postApi("/login", data);
     //Recive la peticion en caso que haya un timeout se cancela y termina por default en 5s despues de 2s mas se termina
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setOpen(false);
 
     if (messege) {
@@ -53,7 +58,7 @@ const Login = () => {
       setSession(token);
       //Crear la cookie si es necesario
       remember ? setCookie(token) : null;
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 200));
       navigate("/app/");
     } else {
       console.log("Error de usuario ");
@@ -144,7 +149,7 @@ const Login = () => {
                         fullWidth
                         variant="standard"
                         type="text"
-                        label="Nombre de usuario"
+                        label="Codigo de usuario"
                         onBlur={handleBlur}
                         onChange={handleChange}
                         value={values.username}
@@ -207,7 +212,7 @@ const Login = () => {
 export default Login;
 
 const checkoutSchema = yup.object().shape({
-  username: yup.string().required("Complete el nombre de usuario"),
+  username: yup.string().required("Complete el codigo de usuario"),
   password: yup.string().required("Complete su contraseña"),
 });
 const initialValues = {
