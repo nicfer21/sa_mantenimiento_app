@@ -17,7 +17,12 @@ import FAQ from "../faq";
 import PerfilScene from "../perfil";
 
 import Geography from "../geography";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import {
+  CssBaseline,
+  ThemeProvider,
+  Backdrop,
+  CircularProgress,
+} from "@mui/material";
 import Calendar from "../calendar/calendar";
 import { ColorModeContext, useMode } from "../../theme.js";
 import ErrorScreen from "../error";
@@ -36,6 +41,7 @@ const AppScreen = () => {
   const [isSidebar, setIsSidebar] = useState(true);
   const navigate = useNavigate();
   const [payload, setPayload] = useState({});
+  const [open, setOpen] = useState(false);
   const cookieData = getCookie();
   const sessionData = getSession();
 
@@ -143,13 +149,19 @@ const AppScreen = () => {
               <Route path="/geography/" element={<Geography />} />
               <Route
                 path="/myprofile/"
-                element={<PerfilScene payload={payload} />}
+                element={<PerfilScene payload={payload} setOpen={setOpen} />}
               />
               {/* Ruta comodin con "*" */}
               <Route path="*" element={<ErrorScreen />} />
             </Routes>
           </main>
         </div>
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={open}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </ThemeProvider>
     </ColorModeContext.Provider>
   );
