@@ -9,6 +9,7 @@ import {
   Alert,
   AlertTitle,
   Dialog,
+  Skeleton,
 } from "@mui/material";
 import Header from "../../components/Header";
 import Accordion from "@mui/material/Accordion";
@@ -20,11 +21,13 @@ import { tokens } from "../../theme";
 import { useEffect, useState } from "react";
 import { getApi, putApi } from "../../tools/mantenimiento-api";
 import { getLocalDate } from "../../tools/extra";
+import { clearSession, deleteCookie } from "../../tools/cookies.js";
 import { Formik } from "formik";
 import * as yup from "yup";
 import md5 from "md5";
 
 import { ExtraRowPerfil, RowPerfil } from "../../components/GridRowText.jsx";
+import { useNavigate } from "react-router-dom";
 
 const PerfilScene = ({ payload, setOpen }) => {
   const theme = useTheme();
@@ -36,13 +39,16 @@ const PerfilScene = ({ payload, setOpen }) => {
 
   const [saveAlert, setSaveAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
+  const navigate = useNavigate();
 
   const [reload, setReload] = useState(false);
+
+  const timeWait = 1250;
 
   const handleFormSubmit = async (values) => {
     setOpen(true);
     await new Promise((resolve) => {
-      setTimeout(resolve, 1000);
+      setTimeout(resolve, timeWait);
     });
     const rs = await putApi(
       "/c_usuarios/" + usuarioData.id_usuarios,
@@ -68,7 +74,7 @@ const PerfilScene = ({ payload, setOpen }) => {
   useEffect(() => {
     const getData = async () => {
       setOpen(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, timeWait));
       const rs = await getApi(
         "/m_trabajadores/" + data.id_trabajadores,
         data.token
@@ -81,7 +87,7 @@ const PerfilScene = ({ payload, setOpen }) => {
 
   useEffect(() => {
     const getData = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, timeWait));
       const rs = await getApi("/c_usuarios/" + data.id_usuarios, data.token);
       setUsuarioData(rs);
     };
@@ -107,18 +113,63 @@ const PerfilScene = ({ payload, setOpen }) => {
             <Grid container spacing={2}>
               <RowPerfil
                 titulo={"ID Trabajador"}
-                valor={perfilData.id_trabajadores}
+                valor={
+                  perfilData.id_trabajadores ? (
+                    perfilData.id_trabajadores
+                  ) : (
+                    <Skeleton animation={"wave"} width={"250px"} />
+                  )
+                }
               />
-              <RowPerfil titulo={"Nombre"} valor={perfilData.nombre} />
-              <RowPerfil titulo={"cargo"} valor={perfilData.cargo} />
-              <RowPerfil titulo={"d.n.i."} valor={perfilData.dni} />
+              <RowPerfil
+                titulo={"Nombre"}
+                valor={
+                  perfilData.nombre ? (
+                    perfilData.nombre
+                  ) : (
+                    <Skeleton animation={"wave"} width={"250px"} />
+                  )
+                }
+              />
+              <RowPerfil
+                titulo={"cargo"}
+                valor={
+                  perfilData.cargo ? (
+                    perfilData.cargo
+                  ) : (
+                    <Skeleton animation={"wave"} width={"250px"} />
+                  )
+                }
+              />
+              <RowPerfil
+                titulo={"d.n.i."}
+                valor={
+                  perfilData.dni ? (
+                    perfilData.dni
+                  ) : (
+                    <Skeleton animation={"wave"} width={"250px"} />
+                  )
+                }
+              />
               <RowPerfil
                 titulo={"fecha decreacion"}
-                valor={getLocalDate(perfilData.createdAt)}
+                valor={
+                  perfilData.createdAt ? (
+                    getLocalDate(perfilData.createdAt)
+                  ) : (
+                    <Skeleton animation={"wave"} width={"250px"} />
+                  )
+                }
               />
               <RowPerfil
                 titulo={"fecha actualizacion"}
-                valor={getLocalDate(perfilData.updatedAt)}
+                valor={
+                  perfilData.updatedAt ? (
+                    getLocalDate(perfilData.updatedAt)
+                  ) : (
+                    <Skeleton animation={"wave"} width={"250px"} />
+                  )
+                }
               />
 
               <ExtraRowPerfil titulo={"Datos extra"} info={perfilData.info} />
@@ -139,17 +190,53 @@ const PerfilScene = ({ payload, setOpen }) => {
             <Grid container spacing={2}>
               <RowPerfil
                 titulo={"ID Usuario"}
-                valor={usuarioData.id_usuarios}
+                valor={
+                  usuarioData.id_usuarios ? (
+                    usuarioData.id_usuarios
+                  ) : (
+                    <Skeleton animation={"wave"} width={"250px"} />
+                  )
+                }
               />
-              <RowPerfil titulo={"Correo"} valor={usuarioData.correo} />
-              <RowPerfil titulo={"Nivel de acceso"} valor={usuarioData.nivel} />
+              <RowPerfil
+                titulo={"Correo"}
+                valor={
+                  usuarioData.correo ? (
+                    usuarioData.correo
+                  ) : (
+                    <Skeleton animation={"wave"} width={"250px"} />
+                  )
+                }
+              />
+              <RowPerfil
+                titulo={"Nivel de acceso"}
+                valor={
+                  usuarioData.nivel ? (
+                    usuarioData.nivel===1?"Admin":usuarioData.nivel===2?"Supervisor":"Ejecutor"
+                  ) : (
+                    <Skeleton animation={"wave"} width={"250px"} />
+                  )
+                }
+              />
               <RowPerfil
                 titulo={"fecha decreacion"}
-                valor={getLocalDate(usuarioData.createdAt)}
+                valor={
+                  usuarioData.createdAt ? (
+                    getLocalDate(usuarioData.createdAt)
+                  ) : (
+                    <Skeleton animation={"wave"} width={"250px"} />
+                  )
+                }
               />
               <RowPerfil
                 titulo={"fecha actualizacion"}
-                valor={getLocalDate(usuarioData.updatedAt)}
+                valor={
+                  usuarioData.updatedAt ? (
+                    getLocalDate(usuarioData.updatedAt)
+                  ) : (
+                    <Skeleton animation={"wave"} width={"250px"} />
+                  )
+                }
               />
             </Grid>
           </Box>
@@ -215,17 +302,44 @@ const PerfilScene = ({ payload, setOpen }) => {
                   />
 
                   <Button
-                    type="submit"
                     fullWidth
+                    type="submit"
+                    color="warning"
                     variant="contained"
                     sx={{ m: "10px" }}
                   >
-                    Ingresar
+                    Cambiar de contraseña
                   </Button>
                 </Box>
               );
             }}
           </Formik>
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Boton para cerrar sesion */}
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography color={colors.greenAccent[500]} variant="h3">
+            Opciones
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box sx={{ flexGrow: 1, m: 1, width: "250px" }}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="error"
+              onClick={() => {
+                deleteCookie();
+                clearSession();
+                navigate("/");
+              }}
+            >
+              Cerras Sesion
+            </Button>
+          </Box>
         </AccordionDetails>
       </Accordion>
 

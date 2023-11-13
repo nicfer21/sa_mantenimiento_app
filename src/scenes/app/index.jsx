@@ -15,6 +15,7 @@ import FAQ from "../faq";
 
 //Propios
 import PerfilScene from "../perfil";
+import TrabajadorScene from "../trabajador";
 
 import Geography from "../geography";
 import {
@@ -150,6 +151,12 @@ const AppScreen = () => {
               <Route
                 path="/myprofile/"
                 element={<PerfilScene payload={payload} setOpen={setOpen} />}
+              />
+              <Route
+                path="/worker/"
+                element={
+                  <TrabajadorScene payload={payload} setOpen={setOpen} />
+                }
               />
               {/* Ruta comodin con "*" */}
               <Route path="*" element={<ErrorScreen />} />

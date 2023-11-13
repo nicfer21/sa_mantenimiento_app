@@ -11,6 +11,9 @@ import {
   Paper,
   Box,
   Grid,
+  Dialog,
+  Alert,
+  AlertTitle,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
@@ -39,6 +42,7 @@ const Login = () => {
   const [theme, colorMode] = useMode();
   const [open, setOpen] = useState(false);
   const [remember, setRemember] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
 
   const handleFormSubmit = async (values) => {
     //Inicia la carga
@@ -61,7 +65,7 @@ const Login = () => {
       await new Promise((resolve) => setTimeout(resolve, 200));
       navigate("/app/");
     } else {
-      console.log("Error de usuario ");
+      setErrorAlert(true);
     }
   };
 
@@ -126,7 +130,10 @@ const Login = () => {
                 Inicio de Sesión
               </Typography>
               <Formik
-                onSubmit={handleFormSubmit}
+                onSubmit={async (values, { resetForm }) => {
+                  await handleFormSubmit(values);
+                  resetForm();
+                }}
                 initialValues={initialValues}
                 validationSchema={checkoutSchema}
               >
@@ -204,6 +211,18 @@ const Login = () => {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
+
+        <Dialog
+          open={errorAlert}
+          onClose={() => {
+            setErrorAlert(false);
+          }}
+        >
+          <Alert severity="error">
+            <AlertTitle>Error</AlertTitle>
+            Error al ingresar — <strong>Usuario o contraseña invalida</strong>
+          </Alert>
+        </Dialog>
       </ThemeProvider>
     </ColorModeContext.Provider>
   );

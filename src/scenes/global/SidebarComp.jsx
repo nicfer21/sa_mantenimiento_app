@@ -16,6 +16,7 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import EngineeringIcon from "@mui/icons-material/EngineeringOutlined";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -218,7 +219,14 @@ const SidebarComp = ({ payload }) => {
               selected={selected}
               setSelected={setSelected}
             />
-             <Item
+            <Item
+              title="Trabajadores"
+              to="/worker"
+              icon={<EngineeringIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
               title="Mi Perfil"
               to="/myprofile"
               icon={<PersonOutlinedIcon />}
