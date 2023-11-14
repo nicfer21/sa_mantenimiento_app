@@ -10,7 +10,7 @@ const Topbar = () => {
   const navigate = useNavigate();
 
   return (
-    <Box display="flex" justifyContent="end" p={1}>
+    <Box display="flex" justifyContent="end" m={2}>
       {/* ICONS */}
       <Box display="flex">
         <IconButton>

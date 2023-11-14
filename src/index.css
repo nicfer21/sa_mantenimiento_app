@@ -15,6 +15,10 @@ body,
   position: relative;
 }
 
+main {
+  overflow: auto;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -32,4 +36,16 @@ body,
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+.sidebar {
+  width: 200px;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: lightblue;
+}
+
+.sidebar-item {
+  padding: 10px;
+  border-bottom: 1px solid black;
 }

@@ -34,9 +34,10 @@ const WorkerScene = ({ payload, setOpen }) => {
     const getData = async () => {
       setOpen(true);
       
-      const rs = await getApi("/m_trabajadores/all/", data.token);
       await new Promise((resolve) => setTimeout(resolve, timeWait));
+      const rs = await getApi("/m_trabajadores/all/", data.token);
       setRows(rs);
+      await new Promise((resolve) => setTimeout(resolve, timeWait));
       setOpen(false);
     };
     getData();
@@ -139,7 +140,7 @@ const WorkerScene = ({ payload, setOpen }) => {
         }}
       >
         <DataGrid
-          rows={rows ? rows : []}
+          rows={rows}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
           getRowId={getRowId}

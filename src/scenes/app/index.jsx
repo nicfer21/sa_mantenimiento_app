@@ -148,12 +148,15 @@ const AppScreen = () => {
               <Route path="/faq/" element={<FAQ />} />
               <Route path="/calendar/" element={<Calendar />} />
               <Route path="/geography/" element={<Geography />} />
+
+              {/* My routes */}
+
               <Route
                 path="/myprofile/"
                 element={<PerfilScene payload={payload} setOpen={setOpen} />}
               />
               <Route
-                path="/worker/"
+                path="/workerlist/"
                 element={
                   <TrabajadorScene payload={payload} setOpen={setOpen} />
                 }

@@ -86,7 +86,7 @@ const Login = () => {
             sm={4}
             md={7}
             sx={{
-              backgroundImage: "url(/public/login2.png)",
+              backgroundImage: "url('/login2.png')",
               backgroundRepeat: "no-repeat",
               backgroundColor: (t) =>
                 t.palette.mode === "light"
