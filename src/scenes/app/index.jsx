@@ -1,10 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
+
 import Topbar from "../global/TopbarComp";
 import Sidebar from "../global/SidebarComp";
+
 import Dashboard from "../dashboard";
 import Team from "../team";
+import Geography from "../geography";
 import Invoices from "../invoices";
 import Contacts from "../contacts";
 import Bar from "../bar";
@@ -15,9 +18,10 @@ import FAQ from "../faq";
 
 //Propios
 import PerfilScene from "../perfil";
-import TrabajadorScene from "../trabajador";
+import TrabajadorScene from "../trabajador/ShowTrabajador.jsx";
+import WorkerAdd from "../trabajador/AddTrabajador.jsx";
+import WorkerUpdate from "../trabajador/UpdateTrabajador.jsx";
 
-import Geography from "../geography";
 import {
   CssBaseline,
   ThemeProvider,
@@ -156,10 +160,18 @@ const AppScreen = () => {
                 element={<PerfilScene payload={payload} setOpen={setOpen} />}
               />
               <Route
-                path="/workerlist/"
+                path="/worker/list/"
                 element={
                   <TrabajadorScene payload={payload} setOpen={setOpen} />
                 }
+              />
+              <Route
+                path="/worker/add/"
+                element={<WorkerAdd payload={payload} setOpen={setOpen} />}
+              />
+              <Route
+                path="/worker/update/:id"
+                element={<WorkerUpdate payload={payload} setOpen={setOpen} />}
               />
               {/* Ruta comodin con "*" */}
               <Route path="*" element={<ErrorScreen />} />

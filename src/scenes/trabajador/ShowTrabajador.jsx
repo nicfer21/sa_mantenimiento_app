@@ -1,25 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { tokens } from "../../theme";
-import Header from "../../components/Header";
+import { tokens } from "../../theme.js";
+import Header from "../../components/Header.jsx";
 import { useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getApi } from "../../tools/mantenimiento-api.js";
 import {
   AdminPanelSettingsOutlined,
+  EditOutlined,
   PersonOutlineOutlined,
   SupervisorAccountOutlined,
 } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const WorkerScene = ({ payload, setOpen }) => {
-  
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [data, setData] = useState({});
   const [rows, setRows] = useState([]);
+
   const timeWait = 1250;
+
+  const navigate = useNavigate();
 
   const getRowId = (row) => {
     return row.id_trabajadores;
@@ -33,7 +37,7 @@ const WorkerScene = ({ payload, setOpen }) => {
   useEffect(() => {
     const getData = async () => {
       setOpen(true);
-      
+
       await new Promise((resolve) => setTimeout(resolve, timeWait));
       const rs = await getApi("/m_trabajadores/all/", data.token);
       setRows(rs);
@@ -102,14 +106,41 @@ const WorkerScene = ({ payload, setOpen }) => {
         );
       },
     },
+    {
+      field: "action",
+      headerName: "Actualizar",
+      flex: 1,
+      width: 150,
+      renderCell: (params) => {
+        return (
+          <Button
+            type="button"
+            variant="contained"
+            size="small"
+            color="warning"
+            onClick={() => {
+              navigate("/app/worker/update/" + params.id);
+            }}
+          >
+            <EditOutlined />
+          </Button>
+        );
+      },
+    },
   ];
 
   return (
     <Box m="20px">
-      <Header title="Trabajadores" subtitle="Lista de trabajadores" />
+      <Header
+        title="Lista de Trabajadores"
+        subtitle="Tabla con la lista de trabajadores registrados"
+      />
       <Box
-        m="40px 0 0 0"
-        height="75vh"
+        m="10px 0 0 0"
+        height="100%"
+        p="15px"
+        borderRadius={3}
+        bgcolor={colors.primary[900]}
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",

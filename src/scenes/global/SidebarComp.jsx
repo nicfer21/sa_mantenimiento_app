@@ -126,14 +126,14 @@ const SidebarComp = ({ payload }) => {
             <SubMenu label="Trabajadores" icon={<EngineeringIcon />}>
               <Item
                 title="Lista"
-                to="/workerlist"
+                to="/worker/list/"
                 icon={<ListOutlined />}
                 selected={selected}
                 setSelected={setSelected}
               />
               <Item
                 title="Agregar"
-                to="#"
+                to="/worker/add/"
                 icon={<PostAddOutlined />}
                 selected={selected}
                 setSelected={setSelected}
@@ -142,7 +142,7 @@ const SidebarComp = ({ payload }) => {
 
             <Item
               title="Mi Perfil"
-              to="/myprofile"
+              to="/myprofile/"
               icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
