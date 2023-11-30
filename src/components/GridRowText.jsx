@@ -2,10 +2,10 @@
 import { Grid, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 
-export const RowPerfil = ({ titulo, valor }) => {
+export const RowPerfil = ({ titulo, valor, tamx = 4, tamy = 8 }) => {
   return (
     <>
-      <Grid item xs={4}>
+      <Grid item xs={tamx}>
         <Typography
           variant="h5"
           sx={{
@@ -17,14 +17,14 @@ export const RowPerfil = ({ titulo, valor }) => {
           {titulo}
         </Typography>
       </Grid>
-      <Grid item xs={8}>
+      <Grid item xs={tamy}>
         <Typography variant="h6">{valor}</Typography>
       </Grid>
     </>
   );
 };
 
-export const ExtraRowPerfil = ({ titulo, info }) => {
+export const ExtraRowPerfil = ({ titulo, info, tamx = 4, tamy = 8 }) => {
   const [extra, setExtra] = useState([]);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export const ExtraRowPerfil = ({ titulo, info }) => {
   }, [info]);
   return (
     <>
-      <Grid item xs={4}>
+      <Grid item xs={tamx}>
         <Typography
           variant="h5"
           sx={{
@@ -49,7 +49,7 @@ export const ExtraRowPerfil = ({ titulo, info }) => {
           {titulo}
         </Typography>
       </Grid>
-      <Grid item xs={8}>
+      <Grid item xs={tamy}>
         {extra.map(([key, value]) => {
           return (
             <Typography

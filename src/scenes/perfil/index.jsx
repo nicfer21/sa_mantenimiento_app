@@ -368,6 +368,8 @@ const PerfilScene = ({ payload, setOpen }) => {
           </AccordionDetails>
         </Accordion>
       </Box>
+
+      
       <Dialog
         open={errorAlert}
         onClose={() => {

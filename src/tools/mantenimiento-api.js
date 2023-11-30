@@ -17,6 +17,22 @@ export const getApi = async (route = "/", token = "", timeout = 10000) => {
   }
 };
 
+export const getImageApi = async (route, token = "", timeout = 10000) => {
+  try {
+    const link = urlApi + "/img/" + route;
+    const rs = await axios.get(link, {
+      headers: {
+        token: token,
+      },
+      timeout: timeout,
+      responseType: "blob",
+    });
+    return rs.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const postApi = async (
   route,
   data = {},

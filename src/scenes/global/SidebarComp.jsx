@@ -1,14 +1,21 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, IconButton, Skeleton, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import EngineeringIcon from "@mui/icons-material/EngineeringOutlined";
-import { ListOutlined, PostAddOutlined } from "@mui/icons-material";
+import {
+  AccountTreeOutlined,
+  BentoOutlined,
+  ListOutlined,
+  PostAddOutlined,
+  WysiwygOutlined,
+} from "@mui/icons-material";
+import ImageComponent from "../../components/ImageComponent";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -83,13 +90,22 @@ const SidebarComp = ({ payload }) => {
           {!isCollapsed && (
             <Box mb="25px">
               <Box display="flex" justifyContent="center" alignItems="center">
-                <img
-                  alt="icono empresa"
+                <Box
                   width="100px"
-                  height="100px"
-                  src={`../../assets/imagen.png`}
                   style={{ cursor: "pointer", borderRadius: "40%" }}
-                />
+                >
+                  {data.token ? (
+                    <ImageComponent
+                      token={data.token}
+                      link={"userImg.png"}
+                      titulo={"Imagen de usuario"}
+                      border=""
+                      padding=""
+                    />
+                  ) : (
+                    <Skeleton width="100px" height="100px" />
+                  )}
+                </Box>
               </Box>
               <Box textAlign="center">
                 <Typography
@@ -122,6 +138,23 @@ const SidebarComp = ({ payload }) => {
               selected={selected}
               setSelected={setSelected}
             />
+
+            <Item
+              title="Sistemas"
+              to="/system/"
+              icon={<AccountTreeOutlined />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <SubMenu label="Equipos" icon={<WysiwygOutlined />}>
+              <Item
+                title="Lista de Equipos"
+                to="/equipment/list/"
+                icon={<BentoOutlined />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </SubMenu>
 
             <SubMenu label="Trabajadores" icon={<EngineeringIcon />}>
               <Item

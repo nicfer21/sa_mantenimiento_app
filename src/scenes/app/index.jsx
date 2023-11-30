@@ -21,6 +21,9 @@ import PerfilScene from "../perfil";
 import TrabajadorScene from "../trabajador/ShowTrabajador.jsx";
 import WorkerAdd from "../trabajador/AddTrabajador.jsx";
 import WorkerUpdate from "../trabajador/UpdateTrabajador.jsx";
+import ShowSistema from "../sistema/ShowSistema.jsx";
+import ShowUnidad from "../unidad/ShowUnidad.jsx";
+import ShowMoreUnidad from "../unidad/ShowMoreUnidad.jsx";
 
 import {
   CssBaseline,
@@ -172,6 +175,21 @@ const AppScreen = () => {
               <Route
                 path="/worker/update/:id"
                 element={<WorkerUpdate payload={payload} setOpen={setOpen} />}
+              />
+
+              <Route
+                path="/system/"
+                element={<ShowSistema payload={payload} setOpen={setOpen} />}
+              />
+
+              <Route
+                path="/equipment/list/"
+                element={<ShowUnidad payload={payload} setOpen={setOpen} />}
+              />
+
+              <Route
+                path="/equipment/show/:id"
+                element={<ShowMoreUnidad payload={payload} setOpen={setOpen} />}
               />
               {/* Ruta comodin con "*" */}
               <Route path="*" element={<ErrorScreen />} />
