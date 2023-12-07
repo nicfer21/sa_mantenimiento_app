@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const urlApi = "http://192.168.0.127:5000";
+export const urlApi = "http://192.168.0.127:5000";
 
 export const getApi = async (route = "/", token = "", timeout = 10000) => {
   try {
