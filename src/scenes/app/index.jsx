@@ -6,15 +6,6 @@ import Topbar from "../global/TopbarComp";
 import Sidebar from "../global/SidebarComp";
 
 import Dashboard from "../dashboard";
-import Team from "../team";
-import Geography from "../geography";
-import Invoices from "../invoices";
-import Contacts from "../contacts";
-import Bar from "../bar";
-import Form from "../form";
-import Line from "../line";
-import Pie from "../pie";
-import FAQ from "../faq";
 
 //Propios
 import PerfilScene from "../perfil";
@@ -24,6 +15,9 @@ import WorkerUpdate from "../trabajador/UpdateTrabajador.jsx";
 import ShowSistema from "../sistema/ShowSistema.jsx";
 import ShowUnidad from "../unidad/ShowUnidad.jsx";
 import ShowMoreUnidad from "../unidad/ShowMoreUnidad.jsx";
+import SolicitudAdd from "../solicitud/AddSolicitud.jsx";
+import SolicitudShow from "../solicitud/ShowSolicitud.jsx";
+import SolicitudShowMore from "../solicitud/ShowMoreSolicitud.jsx";
 
 import {
   CssBaseline,
@@ -111,7 +105,9 @@ const AppScreen = () => {
     inicioApp();
   }, [sessionData]);
 
-  useEffect(() => {
+  //Librerar para produccion
+
+  /* useEffect(() => {
     const prueba = async () => {
       setSession(payload, "payload");
       const dataRes = await getApi("/prueba/", sessionData);
@@ -133,7 +129,7 @@ const AppScreen = () => {
     return () => {
       clearInterval(pingFun);
     };
-  }, [payload]);
+  }, [payload]); */
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -145,36 +141,14 @@ const AppScreen = () => {
             <Topbar setIsSidebar={setIsSidebar} />
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/team/" element={<Team />} />
-              <Route path="/contacts/" element={<Contacts />} />
-              <Route path="/invoices/" element={<Invoices />} />
-              <Route path="/form/" element={<Form />} />
-              <Route path="/bar/" element={<Bar />} />
-              <Route path="/pie/" element={<Pie />} />
-              <Route path="/line/" element={<Line />} />
-              <Route path="/faq/" element={<FAQ />} />
-              <Route path="/calendar/" element={<Calendar />} />
-              <Route path="/geography/" element={<Geography />} />
 
-              {/* My routes */}
+              <Route path="/calendar/" element={<Calendar />} />
+
+              {/* All routes */}
 
               <Route
                 path="/myprofile/"
                 element={<PerfilScene payload={payload} setOpen={setOpen} />}
-              />
-              <Route
-                path="/worker/list/"
-                element={
-                  <TrabajadorScene payload={payload} setOpen={setOpen} />
-                }
-              />
-              <Route
-                path="/worker/add/"
-                element={<WorkerAdd payload={payload} setOpen={setOpen} />}
-              />
-              <Route
-                path="/worker/update/:id"
-                element={<WorkerUpdate payload={payload} setOpen={setOpen} />}
               />
 
               <Route
@@ -191,6 +165,57 @@ const AppScreen = () => {
                 path="/equipment/show/:id"
                 element={<ShowMoreUnidad payload={payload} setOpen={setOpen} />}
               />
+
+              <Route
+                path="/maintenance/request/create/"
+                element={<SolicitudAdd payload={payload} setOpen={setOpen} />}
+              />
+
+              <Route
+                path="/maintenance/request/show/"
+                element={<SolicitudShow payload={payload} setOpen={setOpen} />}
+              />
+
+              <Route
+                path="/maintenance/request/show/:id"
+                element={
+                  <SolicitudShowMore payload={payload} setOpen={setOpen} />
+                }
+              />
+
+              {payload &&
+                (payload.nivel != 3 ? (
+                  <>
+                    <Route
+                      path="/worker/list/"
+                      element={
+                        <TrabajadorScene payload={payload} setOpen={setOpen} />
+                      }
+                    />
+
+                    {payload &&
+                      (payload.nivel != 2 ? (
+                        <>
+                          <Route
+                            path="/worker/add/"
+                            element={
+                              <WorkerAdd payload={payload} setOpen={setOpen} />
+                            }
+                          />
+                          <Route
+                            path="/worker/update/:id"
+                            element={
+                              <WorkerUpdate
+                                payload={payload}
+                                setOpen={setOpen}
+                              />
+                            }
+                          />
+                        </>
+                      ) : null)}
+                  </>
+                ) : null)}
+
               {/* Ruta comodin con "*" */}
               <Route path="*" element={<ErrorScreen />} />
             </Routes>

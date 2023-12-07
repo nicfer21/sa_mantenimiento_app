@@ -5,20 +5,28 @@ import { useState, useEffect } from "react";
 export const RowPerfil = ({ titulo, valor, tamx = 4, tamy = 8 }) => {
   return (
     <>
-      <Grid item xs={tamx}>
+      <Grid
+        item
+        xs={tamx}
+        sx={{
+          padding: "5px",
+        }}
+      >
         <Typography
           variant="h5"
           sx={{
             fontWeight: "bold",
             textTransform: "uppercase",
-            textAlign: "center",
+            textAlign: "left",
           }}
         >
           {titulo}
         </Typography>
       </Grid>
       <Grid item xs={tamy}>
-        <Typography variant="h6">{valor}</Typography>
+        <Typography variant="h6" sx={{ textAlign: "justify" }}>
+          {valor}
+        </Typography>
       </Grid>
     </>
   );
@@ -43,7 +51,7 @@ export const ExtraRowPerfil = ({ titulo, info, tamx = 4, tamy = 8 }) => {
           sx={{
             fontWeight: "bold",
             textTransform: "uppercase",
-            textAlign: "center",
+            textAlign: "left",
           }}
         >
           {titulo}

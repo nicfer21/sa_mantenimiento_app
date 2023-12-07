@@ -4,14 +4,20 @@ import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Box, IconButton, Skeleton, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { tokens } from "../../theme";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import EngineeringIcon from "@mui/icons-material/EngineeringOutlined";
 import {
   AccountTreeOutlined,
+  BallotOutlined,
   BentoOutlined,
+  CalendarToday,
+  DashboardOutlined,
+  DocumentScannerOutlined,
+  FeaturedPlayListOutlined,
+  ListAltOutlined,
   ListOutlined,
+  PeopleAltOutlined,
   PostAddOutlined,
   WysiwygOutlined,
 } from "@mui/icons-material";
@@ -134,21 +140,97 @@ const SidebarComp = ({ payload }) => {
             <Item
               title="Dashboard"
               to="/"
-              icon={<HomeOutlinedIcon />}
+              icon={<DashboardOutlined />}
               selected={selected}
               setSelected={setSelected}
             />
 
+            <SubMenu label="Solicitudes" icon={<FeaturedPlayListOutlined />}>
+              <Item
+                title="Crear Solicitud"
+                to="/maintenance/request/create/"
+                icon={<PostAddOutlined />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Ver Solicitud"
+                to="/maintenance/request/show/"
+                icon={<ListAltOutlined />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </SubMenu>
+
+            <SubMenu label="Actividades" icon={<EngineeringIcon />}>
+              <Item
+                title="Crear Actividad"
+                to="#"
+                icon={<PostAddOutlined />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Ver Actividad"
+                to="#"
+                icon={<ListAltOutlined />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </SubMenu>
+
+            <SubMenu label="Ordenes" icon={<BallotOutlined />}>
+              <Item
+                title="Crear Ordenes"
+                to="#"
+                icon={<PostAddOutlined />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Ver Ordenes"
+                to="#"
+                icon={<ListAltOutlined />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </SubMenu>
+
+            <SubMenu label="Reportes" icon={<DocumentScannerOutlined />}>
+              <Item
+                title="Crear Reporte"
+                to="#"
+                icon={<PostAddOutlined />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Ver Reporte"
+                to="#"
+                icon={<ListAltOutlined />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </SubMenu>
+
             <Item
-              title="Sistemas"
-              to="/system/"
-              icon={<AccountTreeOutlined />}
+              title="Calendario"
+              to="#"
+              icon={<CalendarToday />}
               selected={selected}
               setSelected={setSelected}
             />
-            <SubMenu label="Equipos" icon={<WysiwygOutlined />}>
+
+            <SubMenu label="Informacion Tecnica" icon={<WysiwygOutlined />}>
               <Item
-                title="Lista de Equipos"
+                title="Sistemas"
+                to="/system/"
+                icon={<AccountTreeOutlined />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Equipos"
                 to="/equipment/list/"
                 icon={<BentoOutlined />}
                 selected={selected}
@@ -156,22 +238,37 @@ const SidebarComp = ({ payload }) => {
               />
             </SubMenu>
 
-            <SubMenu label="Trabajadores" icon={<EngineeringIcon />}>
-              <Item
-                title="Lista"
-                to="/worker/list/"
-                icon={<ListOutlined />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <Item
-                title="Agregar"
-                to="/worker/add/"
-                icon={<PostAddOutlined />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-            </SubMenu>
+            {payload &&
+              (payload.nivel != 3 ? (
+                <SubMenu
+                  label="Gestion de Personal"
+                  icon={<PeopleAltOutlined />}
+                >
+                  {payload &&
+                    (payload.nivel != 2 ? (
+                      <Item
+                        title="Crear Trabajadores"
+                        to="/worker/add/"
+                        icon={<ListAltOutlined />}
+                        selected={selected}
+                        setSelected={setSelected}
+                      />
+                    ) : null)}
+
+                  <Item
+                    title="Ver Trabjadores"
+                    to="/worker/list/"
+                    icon={<ListOutlined />}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                </SubMenu>
+              ) : null)}
+
+            <SubMenu
+              label="Inventarios"
+              icon={<DocumentScannerOutlined />}
+            ></SubMenu>
 
             <Item
               title="Mi Perfil"

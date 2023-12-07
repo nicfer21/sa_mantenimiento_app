@@ -7,6 +7,7 @@ import {
   AccordionSummary,
   Box,
   Button,
+  CardActionArea,
   Grid,
   Skeleton,
   Typography,
@@ -19,11 +20,15 @@ import { useEffect, useState } from "react";
 import { getApi, getImageApi } from "../../tools/mantenimiento-api.js";
 import { ExtraRowPerfil, RowPerfil } from "../../components/GridRowText.jsx";
 import ImageComponent from "../../components/ImageComponent.jsx";
+import ClickImageComponent from "../../components/ClickImageComponent.jsx";
 
 const ShowSistema = ({ payload, setOpen }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [data, setData] = useState({});
+
+  const [useImage, setUseImage] = useState(false);
+  const [useLink, setUseLink] = useState("");
 
   const [systemData, setSystemData] = useState([]);
 
@@ -68,59 +73,73 @@ const ShowSistema = ({ payload, setOpen }) => {
                   sx={{ borderBottom: `3px solid ${colors.primary[900]}` }}
                 >
                   <Typography color={colors.greenAccent[500]} variant="h3">
-                    Informacion del {" "}
+                    Informacion del{" "}
                     <strong style={{ color: colors.greenAccent[300] }}>
-                      {system.nombre}
+                      {system.nombre + " (" + system.codigo_s + ")"}
                     </strong>
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Grid container spacing={2}>
-                      <RowPerfil
-                        titulo="ID"
-                        valor={system.id_sistemas}
-                        tamx={2}
-                        tamy={10}
-                      />
-                      <RowPerfil
-                        titulo="Nombre"
-                        valor={system.nombre}
-                        tamx={2}
-                        tamy={10}
-                      />
-                      <RowPerfil
-                        titulo="Codigo"
-                        valor={system.codigo_s}
-                        tamx={2}
-                        tamy={10}
-                      />
-                      <RowPerfil
-                        titulo="Descripcion"
-                        valor={system.descripcion}
-                        tamx={2}
-                        tamy={10}
-                      />
-                      <ExtraRowPerfil
-                        info={system.info}
-                        titulo="Datos adicionales"
-                        tamx={2}
-                        tamy={10}
-                      />
-                      <Grid item xs={12}>
+                  <Box sx={{ display: "flex", flexDirection: "row" }}>
+                    <Box>
+                      <Grid container spacing={2}>
+                        <RowPerfil
+                          titulo="Codigo Sistema"
+                          valor={system.codigo_s}
+                          tamx={3}
+                          tamy={9}
+                        />
+                        <RowPerfil
+                          titulo="Nombre"
+                          valor={system.nombre}
+                          tamx={3}
+                          tamy={9}
+                        />
+                        <RowPerfil
+                          titulo="Descripcion"
+                          valor={system.descripcion}
+                          tamx={3}
+                          tamy={9}
+                        />
+                        <ExtraRowPerfil
+                          info={system.info}
+                          titulo="Datos adicionales"
+                          tamx={3}
+                          tamy={9}
+                        />
+                      </Grid>
+                    </Box>
+                    <Box sx={{ padding: "10px" }}>
+                      <CardActionArea
+                        onClick={async () => {
+                          setUseLink(system.imagen);
+                          setOpen(true);
+                          await new Promise((resolve) =>
+                            setTimeout(resolve, timeWait)
+                          );
+                          setUseImage(true);
+                          setOpen(false);
+                        }}
+                      >
                         <ImageComponent
                           link={system.imagen}
                           token={data.token}
                           titulo={system.nombre}
                         />
-                      </Grid>
-                    </Grid>
+                      </CardActionArea>
+                    </Box>
                   </Box>
                 </AccordionDetails>
               </Accordion>
             );
           })}
       </Box>
+      <ClickImageComponent
+        link={useLink}
+        useImage={useImage}
+        setUseImage={setUseImage}
+        token={data.token}
+      />
     </Box>
   );
 };

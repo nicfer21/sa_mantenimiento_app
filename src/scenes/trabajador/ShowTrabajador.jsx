@@ -112,10 +112,12 @@ const WorkerScene = ({ payload, setOpen }) => {
       flex: 1,
       width: 150,
       renderCell: (params) => {
+        const permiso = payload.nivel != 1 ? true : false;
         return (
           <Button
             type="button"
             variant="contained"
+            disabled={permiso}
             size="small"
             color="warning"
             onClick={() => {

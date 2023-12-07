@@ -157,7 +157,7 @@ const WorkerAdd = ({ payload, setOpen }) => {
                 return (
                   <Box component="form" noValidate onSubmit={handleSubmit}>
                     <Grid container spacing={3}>
-                      <Grid item xs={7}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
                           variant="outlined"
@@ -171,7 +171,7 @@ const WorkerAdd = ({ payload, setOpen }) => {
                           helperText={touched.dni && errors.dni}
                         />
                       </Grid>
-                      <Grid item xs={7}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
                           variant="outlined"
@@ -185,7 +185,7 @@ const WorkerAdd = ({ payload, setOpen }) => {
                           helperText={touched.nombre && errors.nombre}
                         />
                       </Grid>
-                      <Grid item xs={7}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
                           variant="outlined"
@@ -199,7 +199,7 @@ const WorkerAdd = ({ payload, setOpen }) => {
                           helperText={touched.cargo && errors.cargo}
                         />
                       </Grid>
-                      <Grid item xs={7}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
                           variant="outlined"
@@ -213,7 +213,7 @@ const WorkerAdd = ({ payload, setOpen }) => {
                           helperText={touched.correo && errors.correo}
                         />
                       </Grid>
-                      <Grid item xs={7}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
                           variant="outlined"
@@ -227,7 +227,7 @@ const WorkerAdd = ({ payload, setOpen }) => {
                           helperText={touched.acceso && errors.acceso}
                         />
                       </Grid>
-                      <Grid item xs={7}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
                           id="outlined-select-currency"
@@ -249,7 +249,7 @@ const WorkerAdd = ({ payload, setOpen }) => {
                           colors={colors}
                         />
                       </Grid>
-                      <Grid item xs={7}>
+                      <Grid item xs={12}>
                         <Button
                           fullWidth
                           type="submit"

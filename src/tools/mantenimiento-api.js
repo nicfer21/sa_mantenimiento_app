@@ -52,6 +52,26 @@ export const postApi = async (
     return error;
   }
 };
+export const postApiFile = async (
+  route,
+  formData,
+  token = "",
+  timeout = 10000
+) => {
+  try {
+    const link = urlApi + route;
+    const rs = await axios.post(link, formData, {
+      headers: {
+        token: token,
+        "Content-Type": "multipart/form-data",
+      },
+      timeout: timeout,
+    });
+    return rs.data;
+  } catch (error) {
+    return error;
+  }
+};
 
 export const putApi = async (route, data = {}, token = "", timeout = 10000) => {
   try {
