@@ -18,6 +18,9 @@ import ShowMoreUnidad from "../unidad/ShowMoreUnidad.jsx";
 import SolicitudAdd from "../solicitud/AddSolicitud.jsx";
 import SolicitudShow from "../solicitud/ShowSolicitud.jsx";
 import SolicitudShowMore from "../solicitud/ShowMoreSolicitud.jsx";
+import ActividadAdd from "../actividad/AddActividad.jsx";
+import ActividadShow from "../actividad/ShowActividad.jsx";
+import ActividadShowMore from "../actividad/ShowMoreActividad.jsx";
 
 import {
   CssBaseline,
@@ -180,6 +183,23 @@ const AppScreen = () => {
                 path="/maintenance/request/show/:id"
                 element={
                   <SolicitudShowMore payload={payload} setOpen={setOpen} />
+                }
+              />
+
+              <Route
+                path="/maintenance/activity/create/"
+                element={<ActividadAdd payload={payload} setOpen={setOpen} />}
+              />
+
+              <Route
+                path="/maintenance/activity/show/"
+                element={<ActividadShow payload={payload} setOpen={setOpen} />}
+              />
+
+              <Route
+                path="/maintenance/activity/show/:id"
+                element={
+                  <ActividadShowMore payload={payload} setOpen={setOpen} />
                 }
               />
 

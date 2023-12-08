@@ -10,7 +10,15 @@ import {
   EditOutlined,
 } from "@mui/icons-material";
 
-const KeyValueBox = ({ dataRow, colors, setDataRow }) => {
+const KeyValueBox = ({
+  dataRow,
+  colors,
+  setDataRow,
+  subtitulo = "Agregar Informacion necesaria (Opcional)",
+  nombreLlave = "Nombre de la llave",
+  nombreValor = "Valor de la llave",
+  labelBoton = "Agregar Fila",
+}) => {
   const [rows, setRows] = useState({});
 
   const colorsTheme = colors;
@@ -39,14 +47,14 @@ const KeyValueBox = ({ dataRow, colors, setDataRow }) => {
         flexDirection: "row",
       }}
     >
-      <Typography>Agregar Informacion necesaria</Typography>
+      <Typography>{subtitulo}</Typography>
       <Box sx={{ m: "3px", p: "3px", width: "100%" }}>
         <TextField
           size="small"
           sx={{ marginRight: "15px" }}
           variant="outlined"
           type="text"
-          label="Nombre de la llave"
+          label={nombreLlave}
           name="key"
           value={key}
           onChange={(value) => {
@@ -58,7 +66,7 @@ const KeyValueBox = ({ dataRow, colors, setDataRow }) => {
           sx={{ marginRight: "15px", width: "500px" }}
           variant="outlined"
           type="text"
-          label="Valor de la llave"
+          label={nombreValor}
           name="valor"
           value={valor}
           onChange={(value) => {
@@ -80,20 +88,27 @@ const KeyValueBox = ({ dataRow, colors, setDataRow }) => {
           }}
         >
           <AddBoxOutlined />
-          <Typography variant="h6"> Agregar Fila</Typography>
+          <Typography variant="h6"> {labelBoton}</Typography>
         </Button>
       </Box>
       <Box sx={{ m: "3px", p: "3px", width: "100%", marginTop: "25px" }}>
         {Object.entries(rows).map((row, iter) => {
           return (
-            <Box key={iter} sx={{ marginTop: "8px" }}>
+            <Box
+              key={iter}
+              sx={{
+                marginTop: "8px",
+                flexDirection: "row",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               <TextField
                 size="small"
                 sx={{ marginRight: "15px" }}
                 variant="outlined"
                 type="text"
                 value={row[0]}
-                disabled
               />
               <TextField
                 size="small"
@@ -101,7 +116,6 @@ const KeyValueBox = ({ dataRow, colors, setDataRow }) => {
                 variant="outlined"
                 type="text"
                 value={row[1]}
-                disabled
               />
               <Button
                 type="button"

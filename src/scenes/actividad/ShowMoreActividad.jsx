@@ -1,11 +1,10 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 import { Box } from "@mui/material";
 import { tokens } from "../../theme.js";
 import Header from "../../components/Header.jsx";
 import { useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import { getApi, getImageApi } from "../../tools/mantenimiento-api.js";
+import { getApi } from "../../tools/mantenimiento-api.js";
 
 import LogoEmpresa from "../../LogoEmpresa.jpg";
 
@@ -15,23 +14,21 @@ import {
   Page,
   StyleSheet,
   Image,
-  PDFDownloadLink,
   PDFViewer,
   View,
 } from "@react-pdf/renderer";
 
 import { useParams } from "react-router-dom";
-import { getLocalDate } from "../../tools/extra.js";
 
-const ShowMoreSolicitud = ({ payload, setOpen }) => {
+const ShowMoreActividad = ({ payload, setOpen }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { id } = useParams();
 
   const [data, setData] = useState({});
-  const [dataSolicitud, setDataSolicitud] = useState(null);
 
-  const [imageData, setImageData] = useState(null);
+  const [dataActividad, setDataActividad] = useState(null);
+  const [dataSubpartes, setDataSubpartes] = useState([]);
 
   const timeWait = 1500;
 
@@ -44,31 +41,31 @@ const ShowMoreSolicitud = ({ payload, setOpen }) => {
     const getData = async () => {
       setOpen(true);
       await new Promise((resolve) => setTimeout(resolve, timeWait));
-      const rs = await getApi("/m_solicitudes/" + id, data.token);
-      setDataSolicitud(rs);
+      const rs = await getApi("/m_actividades/" + id, data.token);
+      setDataActividad(rs);
       setOpen(false);
     };
     getData();
   }, [data, setOpen, id]);
 
   useEffect(() => {
-    const getImage = async () => {
-      try {
-        const blob = await getImageApi(dataSolicitud.imagen, data.token);
-        const imageUrl = URL.createObjectURL(blob);
-        setImageData(imageUrl);
-      } catch (error) {
-        setImageData(null);
-      }
+    const getData = async () => {
+      await new Promise((resolve) => setTimeout(resolve, timeWait));
+      const rs = await getApi(
+        "/e_subpartes/partsub/" + dataActividad.id_partes,
+        data.token
+      );
+      console.log(rs);
+      setDataSubpartes(rs);
     };
-    getImage();
-  }, [dataSolicitud, data]);
+    getData();
+  }, [dataActividad, data]);
 
   return (
     <Box m="20px">
       <Header
-        title={"Ver Solicitud de Mantenimiento Nro: " + id}
-        subtitle="Formato de Solicitud de Mantenimiento"
+        title={"Ver Actividad de Mantenimiento Nro: " + id}
+        subtitle="Formato de Actividad de Mantenimiento"
       />
       <Box
         m="10px 0 0 0"
@@ -106,12 +103,12 @@ const ShowMoreSolicitud = ({ payload, setOpen }) => {
         }}
       >
         <PDFViewer width="100%" height="100%" showToolbar>
-          {dataSolicitud != null ? (
+          {dataActividad != null ? (
             <Document
               pdfVersion="1.7ext3"
               creator="Servicentro Avila"
               producer="Servicentro Avila"
-              title={"Solicitud de mantenimiento " + id}
+              title={"Actividad de mantenimiento " + id}
             >
               <Page size={"A4"} style={styles.page} fixed>
                 {/* Cabecera */}
@@ -130,83 +127,88 @@ const ShowMoreSolicitud = ({ payload, setOpen }) => {
                     style={{ width: 100, border: "3px solid black" }}
                   />
                   <Text style={styles.title}>
-                    Solicitud de Mantenimiento Nro {id}
+                    Actividad de Mantenimiento Nro {id}
                   </Text>
                   <Text style={{ fontSize: 9 }}>
-                    Fecha : {new Date(dataSolicitud.createdAt).toLocaleString()}
+                    Fecha : {new Date().toLocaleString()}
                   </Text>
                 </View>
-                {/* Asunto  */}
+
+                {/* Informacion en General  */}
                 <View style={styles.section}>
-                  <Text style={styles.subtitulo}>1. Asunto </Text>
-                  <Text style={styles.texto}>{dataSolicitud.asunto}</Text>
-                  <Text style={styles.texto}>
-                    1.1. Fecha determianda de Inspeccion o Hallazgo :{" "}
-                    {getLocalDate(dataSolicitud.fecha)}
+                  <Text style={styles.subtitulo}>
+                    1. Informacion de la Actividad{" "}
                   </Text>
                   <Text style={styles.texto}>
-                    1.2. Nombre del Solicitante : {dataSolicitud.nombre}
+                    1.1. Titulo : {dataActividad.titulo}
                   </Text>
                   <Text style={styles.texto}>
-                    1.3. Cargo del Solicitante : {dataSolicitud.cargo}
+                    1.2. Duracion : {dataActividad.duracion} minutos
                   </Text>
-                </View>
-                {/* Descripcion */}
-                <View style={styles.section}>
-                  <Text style={styles.subtitulo}>2. Descripcion </Text>
-                  <Text style={styles.texto}>{dataSolicitud.descripcion}</Text>
                   <Text style={styles.texto}>
-                    2.1. Informacion adicional :{" "}
+                    1.3. Tipo : {dataActividad.tipo}
                   </Text>
-                  {dataSolicitud.info != null
-                    ? Object.entries(dataSolicitud.info).map((row, iter) => {
-                        return (
-                          <Text key={iter} style={styles.textoP}>
-                            2.1.{iter + 1}. {row[0]} = {row[1]}
-                          </Text>
-                        );
-                      })
+                  <Text style={styles.texto}>
+                    1.4. Prioridad : {dataActividad.prioridad}
+                  </Text>
+                  <Text style={styles.texto}>
+                    1.5. Procedimiento : {dataActividad.procedimiento}
+                  </Text>
+                  <Text style={styles.texto}>
+                    1.6. Variables a tomar en consideracion:
+                  </Text>
+                  {dataActividad.variables != null
+                    ? Object.entries(dataActividad.variables).map(
+                        (row, iter) => {
+                          return (
+                            <Text key={iter} style={styles.textoP}>
+                              1.6.{iter + 1}. {row[0]} : {row[1]}
+                            </Text>
+                          );
+                        }
+                      )
                     : null}
                 </View>
-                {/* Equipo */}
+
+                {/* Ubicacion, Equipo, Sistemas */}
                 <View style={styles.section}>
                   <Text style={styles.subtitulo}>
-                    3. Informacion del Equipo/Unidad
+                    2. Sistema, Equipo/Unidad, Parte, Subpartes
                   </Text>
                   <Text style={styles.texto}>
-                    3.1. Nombre del Equipo/Unidad :{" "}
-                    {dataSolicitud.unidades_nombre}
+                    2.1. Sistema al que pertenece :{" "}
+                    {dataActividad.sistemas_nombre}
                   </Text>
                   <Text style={styles.texto}>
-                    3.2. Codigo de Equipo/Unidad : {dataSolicitud.codigo_c}
+                    2.2. Nombre del Equipo/Unidad :{" "}
+                    {dataActividad.unidades_nombre}
                   </Text>
                   <Text style={styles.texto}>
-                    3.3. Sistema al que pertenece :{" "}
-                    {dataSolicitud.sistemas_nombre}
+                    2.3. Codigo de Equipo/Unidad :{" "}
+                    {dataActividad.codigo_unidades}
                   </Text>
                   <Text style={styles.texto}>
-                    3.4. Ubicacion del Equipo/Unidad :{" "}
-                    {dataSolicitud.ubicacion_nombre}
-                  </Text>
-                </View>
-                {/* Orden */}
-                <View style={styles.section}>
-                  <Text style={styles.subtitulo}>
-                    4. Seguimiento de la Solicitud de Mantenimiento
+                    2.4. Ubicacion del Equipo/Unidad :{" "}
+                    {dataActividad.ubicacion_nombre}
                   </Text>
                   <Text style={styles.texto}>
-                    4.1 Orden de mantenimiento :
-                    {dataSolicitud.id_ordenes === null
-                      ? "No hay Ordenes de Trabajo para el Seguimiento"
-                      : "Orden de mantenimiento Nro " + dataSolicitud.id_ordenes}
+                    2.5. Nombre de la Parte : {dataActividad.partes_nombre}
                   </Text>
-                </View>
-                {/* Evidencia */}
-                <View style={styles.section}>
-                  <Text style={styles.subtitulo}>5. Evidencia</Text>
-                  <View style={styles.imageContainer}>
-                    <Image src={imageData} style={styles.imagen} />
-                  </View>
+                  <Text style={styles.texto}>
+                    2.6. Codigo de la Parte : {dataActividad.codigo_partes}
+                  </Text>
+                  <Text style={styles.texto}>2.7. Subpartes : </Text>
+                  {dataSubpartes &&
+                    (dataSubpartes.length === 0
+                      ? "No tiene Subpartes"
+                      : Object.entries(dataSubpartes).map((row, iter) => {
+                          return (
+                            <Text key={iter} style={styles.textoP}>
+                              2.6.{iter + 1}. {row[1].nombre} (Codigo :{" "}
+                              {row[1].codigo_c} )
+                            </Text>
+                          );
+                        }))}
                 </View>
 
                 <View style={styles.pageNumber}>
@@ -225,7 +227,7 @@ const ShowMoreSolicitud = ({ payload, setOpen }) => {
   );
 };
 
-export default ShowMoreSolicitud;
+export default ShowMoreActividad;
 
 const styles = StyleSheet.create({
   page: {
@@ -282,4 +284,3 @@ const styles = StyleSheet.create({
     color: "grey",
   },
 });
-

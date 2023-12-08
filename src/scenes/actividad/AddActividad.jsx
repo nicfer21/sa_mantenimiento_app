@@ -11,6 +11,7 @@ import {
   Dialog,
   Alert,
   AlertTitle,
+  Autocomplete,
 } from "@mui/material";
 import { tokens } from "../../theme.js";
 import Header from "../../components/Header.jsx";
@@ -24,33 +25,91 @@ import * as yup from "yup";
 
 //Icons
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { postApiFile } from "../../tools/mantenimiento-api.js";
+import { postApi } from "../../tools/mantenimiento-api.js";
 import ComboboxSelect from "../../components/ComboboxSelect.jsx";
 
-const AddSolicitud = ({ payload, setOpen }) => {
+const AddActividad = ({ payload, setOpen }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   const [data, setData] = useState({});
 
-  const [comboValue, setComboValue] = useState(null);
+  const [comboTipo, setComboTipo] = useState(null);
+  const [comboPrioridad, setComboPrioridad] = useState(null);
+  const [comboPartes, setComboPartes] = useState(null);
+  const [rows, setRows] = useState({});
 
   const [saveAlert, setSaveAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [errorAlert1, setErrorAlert1] = useState(false);
 
-  const [rows, setRows] = useState({});
-
   const navigate = useNavigate();
 
   const timeWait = 1500;
 
-  const [image, setImage] = useState(null);
+  const tipo = [
+    {
+      value: "1",
+      label: "Mantenimiento correctivo",
+    },
+    {
+      value: "2",
+      label: "Mantenimiento preventivo con base en el tiempo",
+    },
+    {
+      value: "3",
+      label: "Mantenimiento preventivo con base en el uso",
+    },
+    {
+      value: "4",
+      label: "Mantenimiento predictivo",
+    },
+    {
+      value: "5",
+      label: "Mantenimiento de oportunidad",
+    },
+    {
+      value: "6",
+      label: "Detección de fallas",
+    },
+    {
+      value: "7",
+      label: "Modificación del diseño",
+    },
+    {
+      value: "8",
+      label: "Reparación General",
+    },
+    {
+      value: "9",
+      label: "Reemplazo",
+    },
+  ];
 
-  const onImageChange = (event) => {
-    if (event.target.files && event.target.files[0]) {
-      setImage(event.target.files[0]);
-    }
+  const prioridad = [
+    {
+      value: "1",
+      label: "Emergencia",
+    },
+    {
+      value: "2",
+      label: "Urgencia",
+    },
+    {
+      value: "3",
+      label: "Normal",
+    },
+    {
+      value: "4",
+      label: "Programada",
+    },
+  ];
+
+  const handleTipoComboboxChange = (event, newValue) => {
+    setComboTipo(newValue);
+  };
+  const handlePrioridadComboboxChange = (event, newValue) => {
+    setComboPrioridad(newValue);
   };
 
   useEffect(() => {
@@ -61,8 +120,8 @@ const AddSolicitud = ({ payload, setOpen }) => {
   return (
     <Box m="20px">
       <Header
-        title="Crear nueva solicitud"
-        subtitle="Formulario para redactar nueva solicitud"
+        title="Crear nueva Actividad de Mantenimiento"
+        subtitle="Formulario para crear nueva Actividad de Mantenimiento"
       />
       <Box
         m="10px 0 0 0"
@@ -109,35 +168,35 @@ const AddSolicitud = ({ payload, setOpen }) => {
           <AccordionDetails>
             <Formik
               onSubmit={async (values) => {
-                if (image != null && comboValue != null) {
-                  const formData = new FormData();
+                if (
+                  comboPartes != null &&
+                  comboPrioridad != null &&
+                  ComboboxSelect != null
+                ) {
+                  const dataForm = {
+                    titulo: values.titulo,
+                    id_partes: comboPartes.value,
+                    tipo: comboTipo.value,
+                    prioridad: comboPrioridad.value,
+                    duracion: values.duracion,
+                    procedimiento: values.procedimiento,
+                    variables: rows,
+                  };
+
                   setOpen(true);
-
-                  const isoDate = new Date(values.fecha).toISOString();
-
-                  formData.append("asunto", values.asunto);
-                  formData.append("descripcion", values.descripcion);
-                  formData.append("file", image);
-                  formData.append("info", JSON.stringify(rows));
-                  formData.append("id_trabajadores", data.id_trabajadores);
-                  formData.append("id_unidades", comboValue.value);
-                  formData.append("fecha", isoDate);
-
-                  const rs = await postApiFile(
-                    "/m_solicitudes/",
-                    formData,
+                  const rs = await postApi(
+                    "/m_actividades/",
+                    dataForm,
                     data.token
                   );
-
                   await new Promise((resolve) => setTimeout(resolve, timeWait));
                   setOpen(false);
-                  rs.messege === 1;
                   if (rs.messege === 1) {
                     setSaveAlert(true);
                     await new Promise((resolve) =>
                       setTimeout(resolve, timeWait)
                     );
-                    navigate("/app/maintenance/request/show/");
+                    navigate("/app/maintenance/activity/show/");
                   } else {
                     setErrorAlert1(true);
                   }
@@ -164,24 +223,81 @@ const AddSolicitud = ({ payload, setOpen }) => {
                           fullWidth
                           variant="outlined"
                           type="text"
-                          label="Asunto de la Solicitud"
+                          label="Titulo de la Actividad"
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          value={values.asunto}
-                          name="asunto"
-                          error={!!touched.asunto && !!errors.asunto}
-                          helperText={touched.asunto && errors.asunto}
+                          value={values.titulo}
+                          name="titulo"
+                          error={!!touched.titulo && !!errors.titulo}
+                          helperText={touched.titulo && errors.titulo}
                         />
                       </Grid>
+
+                      {/* Combobox partes */}
                       <Grid item xs={12}>
                         {data.token ? (
                           <ComboboxSelect
                             token={data.token}
-                            url={"/e_unidades/combobox/"}
-                            setComboValue={setComboValue}
-                            titulo={"Seleccione el Equipo/Unidad en cuestion"}
+                            url={"/e_partes/combobox/"}
+                            setComboValue={setComboPartes}
+                            titulo={"Seleccione la Parte correspondiente"}
                           />
                         ) : null}
+                      </Grid>
+
+                      {/* Tipo de mantenimiento */}
+                      <Grid item xs={12}>
+                        <Autocomplete
+                          id="tipo"
+                          options={tipo}
+                          getOptionLabel={(option) => option.label}
+                          value={comboTipo}
+                          onChange={handleTipoComboboxChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.value === value.value
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Tipo de Mantenimiento"
+                            />
+                          )}
+                        />
+                      </Grid>
+
+                      {/* Prioridad de Mantenimiento */}
+                      <Grid item xs={12}>
+                        <Autocomplete
+                          id="tipo"
+                          options={prioridad}
+                          getOptionLabel={(option) => option.label}
+                          value={comboPrioridad}
+                          onChange={handlePrioridadComboboxChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.value === value.value
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Prioridad de Mantenimiento"
+                            />
+                          )}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        <TextField
+                          fullWidth
+                          variant="outlined"
+                          type="number"
+                          label="Duracion aproximada en minutos de la Actividad"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          value={values.duracion}
+                          name="duracion"
+                          error={!!touched.duracion && !!errors.duracion}
+                          helperText={touched.duracion && errors.duracion}
+                        />
                       </Grid>
 
                       <Grid item xs={12}>
@@ -191,31 +307,17 @@ const AddSolicitud = ({ payload, setOpen }) => {
                           type="text"
                           multiline
                           rows={5}
-                          label="Descripcion de la solicitud"
+                          label="Descripcion del procedimiento"
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          value={values.descripcion}
-                          name="descripcion"
-                          error={!!touched.descripcion && !!errors.descripcion}
-                          helperText={touched.descripcion && errors.descripcion}
-                        />
-                      </Grid>
-
-                      <Grid item xs={12}>
-                        <Typography variant="h5">
-                          Fecha y hora de la Inspeccion o Descubrimiento
-                        </Typography>
-                        <br />
-                        <TextField
-                          fullWidth
-                          variant="outlined"
-                          type="datetime-local"
-                          onBlur={handleBlur}
-                          onChange={handleChange}
-                          value={values.fecha}
-                          name="fecha"
-                          error={!!touched.fecha && !!errors.fecha}
-                          helperText={touched.fecha && errors.fecha}
+                          value={values.procedimiento}
+                          name="procedimiento"
+                          error={
+                            !!touched.procedimiento && !!errors.procedimiento
+                          }
+                          helperText={
+                            touched.procedimiento && errors.procedimiento
+                          }
                         />
                       </Grid>
 
@@ -225,50 +327,11 @@ const AddSolicitud = ({ payload, setOpen }) => {
                           dataRow={rows}
                           setDataRow={setRows}
                           colors={colors}
+                          subtitulo="Agregar Variables de Seguimiento (Opcional)"
+                          nombreLlave="Nombre de la Variable"
+                          nombreValor="Descripcion de la Variable"
+                          labelBoton="Agregar Variable"
                         />
-                      </Grid>
-
-                      {/* Para Subir imagen */}
-                      <Grid item xs={4}>
-                        <Typography variant="h5">
-                          Seleccione la Evidencia para la Solicitud
-                        </Typography>
-                        <br />
-                        <input
-                          type="file"
-                          accept="image/jpeg, image/png"
-                          onChange={onImageChange}
-                          className="filetype"
-                        />
-                      </Grid>
-                      <Grid
-                        item
-                        xs={8}
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-end",
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            width: "500px",
-                            height: "400px",
-                            border: "1px solid black",
-                            borderRadius: "20px",
-                          }}
-                        >
-                          {image ? (
-                            <img
-                              alt="Evidencia"
-                              src={URL.createObjectURL(image)}
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "contain",
-                              }}
-                            />
-                          ) : null}
-                        </Box>
                       </Grid>
 
                       <Grid item xs={3} />
@@ -302,7 +365,8 @@ const AddSolicitud = ({ payload, setOpen }) => {
           <AlertTitle>Error</AlertTitle>
           Error al Enviar —{" "}
           <strong>
-            Para enviar la solicitud es necesario rellenar todos los datos
+            Para enviar la solicitud es necesario rellenar todos los datos a
+            excepcion de las variables
           </strong>
         </Alert>
       </Dialog>
@@ -314,7 +378,7 @@ const AddSolicitud = ({ payload, setOpen }) => {
       >
         <Alert severity="error">
           <AlertTitle>Error</AlertTitle>
-          Error al Enviar — <strong>Envie de nuevo la solicitud</strong>
+          Error al Enviar — <strong>Envie de nuevo la actividad</strong>
         </Alert>
       </Dialog>
       <Dialog
@@ -324,24 +388,28 @@ const AddSolicitud = ({ payload, setOpen }) => {
         }}
       >
         <Alert severity="success">
-          <AlertTitle>Guardo</AlertTitle>
-          El trabajador fue registrado
-          <strong>Se le redireccionara a la lista de trabajadores</strong>
+          <AlertTitle>Guardado</AlertTitle>
+          La Actividad fue registrada
+          <strong>Se le redireccionara a la lista de actividades</strong>
         </Alert>
       </Dialog>
     </Box>
   );
 };
 
-export default AddSolicitud;
+export default AddActividad;
 
 const checkoutSchema = yup.object().shape({
-  asunto: yup.string().required("El asunto es obligatorio"),
-  descripcion: yup.string().required("La descripcion es obligatoria"),
-  fecha: yup.date().required("La Fecha y Hora son necesarios"),
+  titulo: yup.string().required("El titulo es obligatorio"),
+  procedimiento: yup.string().required("El procedimiento es obligatorio"),
+  duracion: yup
+    .number()
+    .required(
+      "Es necesario determinar la duracion de la Actividad de Mantenimiento"
+    ),
 });
 const initialValues = {
-  asunto: "",
-  descripcion: "",
-  fecha: "",
+  titulo: "",
+  procedimiento: "",
+  duracion: "",
 };

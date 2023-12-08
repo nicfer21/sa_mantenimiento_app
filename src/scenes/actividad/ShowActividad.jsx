@@ -7,14 +7,11 @@ import Header from "../../components/Header.jsx";
 import { useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getApi } from "../../tools/mantenimiento-api.js";
-import {
-  CancelOutlined,
-  CheckCircleOutline,
-  SearchOutlined,
-} from "@mui/icons-material";
+import { SearchOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { searchArray } from "../../tools/extra.js";
 
-const ShowSolicitud = ({ payload, setOpen }) => {
+const ShowActividad = ({ payload, setOpen }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [data, setData] = useState({});
@@ -24,8 +21,66 @@ const ShowSolicitud = ({ payload, setOpen }) => {
 
   const navigate = useNavigate();
 
+  const tipo = [
+    {
+      value: "1",
+      label: "Mantenimiento correctivo",
+    },
+    {
+      value: "2",
+      label: "Mantenimiento preventivo con base en el tiempo",
+    },
+    {
+      value: "3",
+      label: "Mantenimiento preventivo con base en el uso",
+    },
+    {
+      value: "4",
+      label: "Mantenimiento predictivo",
+    },
+    {
+      value: "5",
+      label: "Mantenimiento de oportunidad",
+    },
+    {
+      value: "6",
+      label: "Detección de fallas",
+    },
+    {
+      value: "7",
+      label: "Modificación del diseño",
+    },
+    {
+      value: "8",
+      label: "Reparación General",
+    },
+    {
+      value: "9",
+      label: "Reemplazo",
+    },
+  ];
+
+  const prioridad = [
+    {
+      value: "1",
+      label: "Emergencia",
+    },
+    {
+      value: "2",
+      label: "Urgencia",
+    },
+    {
+      value: "3",
+      label: "Normal",
+    },
+    {
+      value: "4",
+      label: "Programada",
+    },
+  ];
+
   const getRowId = (row) => {
-    return row.id_solicitudes;
+    return row.id_actividades;
   };
 
   useEffect(() => {
@@ -38,7 +93,7 @@ const ShowSolicitud = ({ payload, setOpen }) => {
       setOpen(true);
 
       await new Promise((resolve) => setTimeout(resolve, timeWait));
-      const rs = await getApi("/m_solicitudes/list/", data.token);
+      const rs = await getApi("/m_actividades/list/", data.token);
       setRows(rs);
       await new Promise((resolve) => setTimeout(resolve, timeWait));
       setOpen(false);
@@ -47,81 +102,61 @@ const ShowSolicitud = ({ payload, setOpen }) => {
   }, [data]);
 
   const columns = [
-    { field: "id_solicitudes", headerName: "ID", aling: "center" },
     {
-      field: "codigo_c",
-      headerName: "Codigo Equipo/Unidad",
+      field: "id_actividades",
+      headerName: "ID",
+      headerAlign: "center",
+    },
+    {
+      field: "titulo",
+      headerName: "Actividad",
       flex: 1,
       cellClassName: "name-column--cell",
+      headerAlign: "center",
     },
     {
-      field: "unidades_nombre",
-      headerName: "Equipo/Unidad",
+      field: "parte",
+      headerName: "Parte",
       flex: 1,
+      headerAlign: "center",
     },
-    { field: "asunto", headerName: "Asunto", flex: 1 },
+    { field: "unidad", headerName: "Equipo/Unidad", flex: 1 },
     {
-      field: "nombre",
-      headerName: "Solicitante",
+      field: "tipo",
+      headerName: "Tipo de Actividad",
       flex: 1,
-    },
-    {
-      field: "fecha",
-      headerName: "Fecha del Suceso",
-      flex: 1,
+      headerAlign: "center",
       renderCell: (params) => {
-        const fecha = new Date(params.value).toLocaleString();
-        return fecha;
+        return <>{searchArray(params.value, tipo)}</>;
       },
     },
     {
-      field: "id_ordenes",
-      headerName: "Seguimiento",
+      field: "prioridad",
+      headerName: "Prioridad",
       flex: 1,
+      headerAlign: "center",
       renderCell: (params) => {
-        const orden = params.value;
-        const titulo = orden === null ? "Sin Seguimiento" : "Seguido";
-        return (
-          <Box
-            width="100%"
-            m="0 auto"
-            p="5px"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            backgroundColor={
-              orden === null ? colors.redAccent[400] : colors.greenAccent[400]
-            }
-            borderRadius="4px"
-          >
-            {orden === null && <CancelOutlined />}
-            {orden != null && <CheckCircleOutline />}
-            <Typography
-              variant="caption"
-              color={colors.grey[100]}
-              sx={{ ml: "5px" }}
-            >
-              {titulo}
-            </Typography>
-          </Box>
-        );
+        return <>{searchArray(params.value, prioridad)}</>;
       },
     },
+
     {
       field: "action",
       headerName: "Mostrar más",
       flex: 1,
+      headerAlign: "center",
       renderCell: (params) => {
         const permiso = payload.nivel != 1 ? true : false;
         return (
           <Button
             type="button"
             variant="contained"
+            fullWidth
             disabled={permiso}
             size="small"
             color="info"
             onClick={() => {
-              navigate("/app/maintenance/request/show/" + params.id);
+              navigate("/app/maintenance/activity/show/" + params.id);
             }}
           >
             <SearchOutlined />
@@ -131,13 +166,11 @@ const ShowSolicitud = ({ payload, setOpen }) => {
     },
   ];
 
-  // /maintenance/request/show/
-
   return (
     <Box m="20px">
       <Header
-        title="Lista de Solicitudes de Mantenimiento"
-        subtitle="Tabla con la lista de las Solicitudes de Mantenimiento y seguimiento de Orden de mantenimiento"
+        title="Lista de Actividades de Mantenimiento"
+        subtitle="Tabla con la lista de las Actividades de Mantenimiento"
       />
       <Box
         m="10px 0 0 0"
@@ -190,4 +223,4 @@ const ShowSolicitud = ({ payload, setOpen }) => {
   );
 };
 
-export default ShowSolicitud;
+export default ShowActividad;

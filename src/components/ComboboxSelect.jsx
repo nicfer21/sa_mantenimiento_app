@@ -9,6 +9,7 @@ const ComboboxSelect = ({
   setComboValue,
   disabled = false,
   size = "medium",
+  titulo,
 }) => {
   const [data, setData] = useState([]);
 
@@ -29,9 +30,7 @@ const ComboboxSelect = ({
       options={data}
       disabled={disabled}
       size={size}
-      renderInput={(params) => (
-        <TextField {...params} label="Seleccione al equipo en cuestion" />
-      )}
+      renderInput={(params) => <TextField {...params} label={titulo} />}
       onChange={handleChange}
       isOptionEqualToValue={(option, value) => option.value === value.value}
     />

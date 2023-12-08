@@ -13,3 +13,12 @@ export const getLocalDate = (date) => {
   const fechaLocal = fechaUTC.toLocaleDateString("es-PE", opciones);
   return fechaLocal;
 };
+
+export const searchArray = (valor, tipo) => {
+  for (let i = 0; i < tipo.length; i++) {
+    if (tipo[i].value === valor.toString()) {
+      return tipo[i].label;
+    }
+  }
+  return "No se encontró el valor";
+};

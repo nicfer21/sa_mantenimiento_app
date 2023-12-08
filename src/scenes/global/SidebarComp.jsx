@@ -165,14 +165,14 @@ const SidebarComp = ({ payload }) => {
             <SubMenu label="Actividades" icon={<EngineeringIcon />}>
               <Item
                 title="Crear Actividad"
-                to="#"
+                to="/maintenance/activity/create/"
                 icon={<PostAddOutlined />}
                 selected={selected}
                 setSelected={setSelected}
               />
               <Item
                 title="Ver Actividad"
-                to="#"
+                to="/maintenance/activity/show/"
                 icon={<ListAltOutlined />}
                 selected={selected}
                 setSelected={setSelected}
