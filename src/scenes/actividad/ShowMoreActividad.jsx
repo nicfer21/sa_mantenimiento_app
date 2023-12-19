@@ -19,6 +19,7 @@ import {
 } from "@react-pdf/renderer";
 
 import { useParams } from "react-router-dom";
+import { searchArray } from "../../tools/extra.js";
 
 const ShowMoreActividad = ({ payload, setOpen }) => {
   const theme = useTheme();
@@ -29,6 +30,66 @@ const ShowMoreActividad = ({ payload, setOpen }) => {
 
   const [dataActividad, setDataActividad] = useState(null);
   const [dataSubpartes, setDataSubpartes] = useState([]);
+
+  const [change, setChange] = useState(false);
+
+  const tipo = [
+    {
+      value: "1",
+      label: "Mantenimiento correctivo",
+    },
+    {
+      value: "2",
+      label: "Mantenimiento preventivo con base en el tiempo",
+    },
+    {
+      value: "3",
+      label: "Mantenimiento preventivo con base en el uso",
+    },
+    {
+      value: "4",
+      label: "Mantenimiento predictivo",
+    },
+    {
+      value: "5",
+      label: "Mantenimiento de oportunidad",
+    },
+    {
+      value: "6",
+      label: "Detección de fallas",
+    },
+    {
+      value: "7",
+      label: "Modificación del diseño",
+    },
+    {
+      value: "8",
+      label: "Reparación General",
+    },
+    {
+      value: "9",
+      label: "Reemplazo",
+    },
+  ];
+
+  const prioridad = [
+    {
+      value: "1",
+      label: "Emergencia",
+    },
+    {
+      value: "2",
+      label: "Urgencia",
+    },
+    {
+      value: "3",
+      label: "Normal",
+    },
+    {
+      value: "4",
+      label: "Programada",
+    },
+  ];
 
   const timeWait = 1500;
 
@@ -55,7 +116,6 @@ const ShowMoreActividad = ({ payload, setOpen }) => {
         "/e_subpartes/partsub/" + dataActividad.id_partes,
         data.token
       );
-      console.log(rs);
       setDataSubpartes(rs);
     };
     getData();
@@ -66,6 +126,11 @@ const ShowMoreActividad = ({ payload, setOpen }) => {
       <Header
         title={"Ver Actividad de Mantenimiento Nro: " + id}
         subtitle="Formato de Actividad de Mantenimiento"
+        search
+        titulo="Buscar por Numero de Actividad"
+        placeholder="Buscar Actividad"
+        link="/app/maintenance/activity/show/"
+        setChange={setChange}
       />
       <Box
         m="10px 0 0 0"
@@ -146,10 +211,14 @@ const ShowMoreActividad = ({ payload, setOpen }) => {
                     1.2. Duracion : {dataActividad.duracion} minutos
                   </Text>
                   <Text style={styles.texto}>
-                    1.3. Tipo : {dataActividad.tipo}
+                    1.3. Tipo :{" "}
+                    {dataActividad.tipo &&
+                      searchArray(dataActividad.tipo, tipo)}
                   </Text>
                   <Text style={styles.texto}>
-                    1.4. Prioridad : {dataActividad.prioridad}
+                    1.4. Prioridad :{" "}
+                    {dataActividad.prioridad &&
+                      searchArray(dataActividad.prioridad, prioridad)}
                   </Text>
                   <Text style={styles.texto}>
                     1.5. Procedimiento : {dataActividad.procedimiento}

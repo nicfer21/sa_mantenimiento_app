@@ -180,16 +180,20 @@ const SidebarComp = ({ payload }) => {
             </SubMenu>
 
             <SubMenu label="Ordenes" icon={<BallotOutlined />}>
-              <Item
-                title="Crear Ordenes"
-                to="#"
-                icon={<PostAddOutlined />}
-                selected={selected}
-                setSelected={setSelected}
-              />
+              {payload &&
+                (payload.nivel != 3 ? (
+                  <Item
+                    title="Crear Ordenes"
+                    to="/maintenance/order/create/"
+                    icon={<PostAddOutlined />}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                ) : null)}
+
               <Item
                 title="Ver Ordenes"
-                to="#"
+                to="/maintenance/order/show/"
                 icon={<ListAltOutlined />}
                 selected={selected}
                 setSelected={setSelected}

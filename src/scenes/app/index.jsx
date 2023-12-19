@@ -21,6 +21,9 @@ import SolicitudShowMore from "../solicitud/ShowMoreSolicitud.jsx";
 import ActividadAdd from "../actividad/AddActividad.jsx";
 import ActividadShow from "../actividad/ShowActividad.jsx";
 import ActividadShowMore from "../actividad/ShowMoreActividad.jsx";
+import OrdenAdd from "../orden/AddOrden.jsx";
+import OrdenShow from "../orden/ShowOrden.jsx";
+import OrdenShowMore from "../orden/ShowMoreOrden.jsx";
 
 import {
   CssBaseline,
@@ -203,7 +206,17 @@ const AppScreen = () => {
                 }
               />
 
+              <Route
+                path="/maintenance/order/show/"
+                element={<OrdenShow payload={payload} setOpen={setOpen} />}
+              />
+              <Route
+                path="/maintenance/order/show/:id"
+                element={<OrdenShowMore payload={payload} setOpen={setOpen} />}
+              />
+
               {payload &&
+                /* Evitar acceder a los Ejecutores */
                 (payload.nivel != 3 ? (
                   <>
                     <Route
@@ -213,7 +226,13 @@ const AppScreen = () => {
                       }
                     />
 
+                    <Route
+                      path="/maintenance/order/create/"
+                      element={<OrdenAdd payload={payload} setOpen={setOpen} />}
+                    />
+
                     {payload &&
+                      /* Evita acceder a los supervisores */
                       (payload.nivel != 2 ? (
                         <>
                           <Route
