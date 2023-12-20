@@ -90,7 +90,7 @@ const ShowSolicitud = ({ payload, setOpen }) => {
             justifyContent="center"
             alignItems="center"
             backgroundColor={
-              orden === null ? colors.redAccent[400] : colors.greenAccent[400]
+              orden === null ? colors.redAccent[400] : colors.greenAccent[500]
             }
             borderRadius="4px"
           >
@@ -101,7 +101,7 @@ const ShowSolicitud = ({ payload, setOpen }) => {
               color={colors.grey[100]}
               sx={{ ml: "5px" }}
             >
-              {titulo}
+              <strong>{titulo}</strong>
             </Typography>
           </Box>
         );

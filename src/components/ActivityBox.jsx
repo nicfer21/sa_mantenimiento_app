@@ -4,7 +4,12 @@ import { Box, Typography, Button, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 
 //Icons
-import { AddBoxOutlined } from "@mui/icons-material";
+import {
+  AddBoxOutlined,
+  DeleteForeverOutlined,
+  KeyboardArrowDown,
+  KeyboardArrowUpOutlined,
+} from "@mui/icons-material";
 import { getApi } from "../tools/mantenimiento-api";
 import ComboboxSelect from "./ComboboxSelect";
 import { searchArray } from "../tools/extra";
@@ -43,13 +48,17 @@ const ActivityBox = ({
 
   const [change, setChange] = useState(false);
 
-  useEffect(() => {
-    let sumar = 0.0;
-    rowsArray.map((row) => {
-      sumar = sumar + parseFloat(row.duracion);
-    });
-    setDuracion(sumar);
-  }, [rowsArray, change, setDuracion]);
+  useEffect(
+    () => {
+      let sumar = 0.0;
+      rowsArray.map((row) => {
+        sumar = sumar + parseFloat(row.duracion);
+      });
+      setDuracion(sumar);
+    },
+    [rowsArray, change, setDuracion],
+    setActividades
+  );
 
   return (
     <Box
@@ -97,8 +106,8 @@ const ActivityBox = ({
               setRowsArray((prev) => [...prev, rs]);
               setChange(!change);
               setChangeUp((prev) => !prev);
-              setOpen(false);
               setActividades(rowsArray);
+              setOpen(false);
             }
           }}
         >
@@ -111,7 +120,7 @@ const ActivityBox = ({
           {rowsArray.map((row, iter) => {
             const bajar = iter + 1 < rowsArray.length ? false : true;
             const subir = iter > 0 ? false : true;
-
+            setActividades(rowsArray);
             return (
               <Grid
                 item
@@ -152,8 +161,11 @@ const ActivityBox = ({
                       setChangeUp((prev) => !prev);
                       setChange(!change);
                     }}
+                    variant="contained"
+                    color="info"
+                    sx={{ marginRight: "15px" }}
                   >
-                    Subir
+                    <KeyboardArrowUpOutlined />
                   </Button>
                   <Button
                     disabled={bajar}
@@ -165,8 +177,11 @@ const ActivityBox = ({
                       setChangeUp((prev) => !prev);
                       setChange(!change);
                     }}
+                    variant="contained"
+                    color="info"
+                    sx={{ marginRight: "15px" }}
                   >
-                    Bajar
+                    <KeyboardArrowDown />
                   </Button>
                   <Button
                     onClick={() => {
@@ -175,8 +190,11 @@ const ActivityBox = ({
                       setChangeUp((prev) => !prev);
                       setChange(!change);
                     }}
+                    sx={{ marginRight: "15px" }}
+                    variant="contained"
+                    color="error"
                   >
-                    Eliminar
+                    <DeleteForeverOutlined />
                   </Button>
                 </Box>
               </Grid>

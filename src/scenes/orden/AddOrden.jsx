@@ -112,18 +112,35 @@ const AddOrden = ({ payload, setOpen }) => {
           <AccordionDetails>
             <Formik
               onSubmit={async (values) => {
-                const data = {
-                  descripcion: values.descripcion,
-                  id_trabajadores: comboTrabajador.value,
-                  estado: false,
-                  inicio_ordenes: new Date(fechaInicio).toISOString(),
-                  fin_ordenes: new Date(fechaFinal).toISOString(),
-                  id_solicitudes: comboSolicitud,
-                  actividades: actividades,
-                  duracion: duracion,
-                };
+                if (
+                  comboTrabajador != null &&
+                  duracion != 0 &&
+                  fechaInicio != null
+                ) {
+                  setOpen(true);
+                  const dataForm = {
+                    descripcion: values.descripcion,
+                    id_trabajadores: comboTrabajador,
+                    estado: false,
+                    inicio_ordenes: new Date(fechaInicio).toISOString(),
+                    fin_ordenes: new Date(fechaFinal).toISOString(),
+                    id_solicitudes: comboSolicitud,
+                    actividades: actividades,
+                    duracion: duracion,
+                  };
+                  const rs = await postApi("/m_ordenes/", dataForm, data.token);
+                  await new Promise((resolve) => setTimeout(resolve, timeWait));
+                  setOpen(false);
 
-                console.log(data);
+                  if (rs.messege) {
+                    setSaveAlert(true);
+                    navigate("/app/maintenance/order/show/");
+                  } else {
+                    setErrorAlert1(true);
+                  }
+                } else {
+                  setErrorAlert(true);
+                }
               }}
               initialValues={initialValues}
               validationSchema={checkoutSchema}
@@ -274,7 +291,7 @@ const AddOrden = ({ payload, setOpen }) => {
           Error al Enviar —{" "}
           <strong>
             Para enviar la solicitud es necesario rellenar todos los datos a
-            excepcion de las variables
+            excepcion de los Opcionales
           </strong>
         </Alert>
       </Dialog>
@@ -286,7 +303,7 @@ const AddOrden = ({ payload, setOpen }) => {
       >
         <Alert severity="error">
           <AlertTitle>Error</AlertTitle>
-          Error al Enviar — <strong>Envie de nuevo la actividad</strong>
+          Error al Enviar — <strong>Envie de nuevo la Orden</strong>
         </Alert>
       </Dialog>
       <Dialog
@@ -297,8 +314,8 @@ const AddOrden = ({ payload, setOpen }) => {
       >
         <Alert severity="success">
           <AlertTitle>Guardado</AlertTitle>
-          La Actividad fue registrada
-          <strong>Se le redireccionara a la lista de actividades</strong>
+          La Orden fue registrada
+          <strong>Se le redireccionara a la lista de Ordenes</strong>
         </Alert>
       </Dialog>
     </Box>
