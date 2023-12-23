@@ -1,10 +1,8 @@
 import { Box, IconButton } from "@mui/material";
-
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 
 import { useNavigate } from "react-router-dom";
+import { CalendarMonthOutlined } from "@mui/icons-material";
 
 const Topbar = () => {
   const navigate = useNavigate();
@@ -13,11 +11,12 @@ const Topbar = () => {
     <Box display="flex" justifyContent="end" m={2}>
       {/* ICONS */}
       <Box display="flex">
-        <IconButton>
-          <NotificationsOutlinedIcon />
-        </IconButton>
-        <IconButton>
-          <SettingsOutlinedIcon />
+        <IconButton
+          onClick={() => {
+            navigate("/app/calendar/");
+          }}
+        >
+          <CalendarMonthOutlined />
         </IconButton>
         <IconButton
           onClick={() => {

@@ -24,6 +24,10 @@ import ActividadShowMore from "../actividad/ShowMoreActividad.jsx";
 import OrdenAdd from "../orden/AddOrden.jsx";
 import OrdenShow from "../orden/ShowOrden.jsx";
 import OrdenShowMore from "../orden/ShowMoreOrden.jsx";
+import Calendario from "../calendario/index.jsx";
+import ReporteAdd from "../reporte/AddReporte.jsx";
+import ReporteShow from "../reporte/ShowReporte.jsx";
+import ReporteShowMore from "../reporte/ShowMoreReporte.jsx";
 
 import {
   CssBaseline,
@@ -31,7 +35,7 @@ import {
   Backdrop,
   CircularProgress,
 } from "@mui/material";
-import Calendar from "../calendar/calendar";
+
 import { ColorModeContext, useMode } from "../../theme.js";
 import ErrorScreen from "../error";
 import { decodeToken } from "react-jwt";
@@ -148,8 +152,6 @@ const AppScreen = () => {
             <Routes>
               <Route path="/" element={<Dashboard />} />
 
-              <Route path="/calendar/" element={<Calendar />} />
-
               {/* All routes */}
 
               <Route
@@ -213,6 +215,27 @@ const AppScreen = () => {
               <Route
                 path="/maintenance/order/show/:id"
                 element={<OrdenShowMore payload={payload} setOpen={setOpen} />}
+              />
+
+              <Route
+                path="/calendar/"
+                element={<Calendario payload={payload} setOpen={setOpen} />}
+              />
+
+              <Route
+                path="/maintenance/report/create/"
+                element={<ReporteAdd payload={payload} setOpen={setOpen} />}
+              />
+
+              <Route
+                path="/maintenance/report/show/"
+                element={<ReporteShow payload={payload} setOpen={setOpen} />}
+              />
+              <Route
+                path="/maintenance/report/show/:id"
+                element={
+                  <ReporteShowMore payload={payload} setOpen={setOpen} />
+                }
               />
 
               {payload &&

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { Box } from "@mui/material";
 import { tokens } from "../../theme.js";
@@ -21,15 +22,15 @@ import {
 import { useParams } from "react-router-dom";
 import { getLocalDate, searchArray } from "../../tools/extra.js";
 
-const ShowModeOrden = ({ payload, setOpen }) => {
+const ShowMoreReporte = ({ payload, setOpen }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { id } = useParams();
 
   const [data, setData] = useState({});
 
-  const [dataOrden, setDataOrden] = useState(null);
-  const [dataActividad, setDataActividad] = useState(null);
+  const [dataReporte, setDataReporte] = useState(null);
+  const [dataActividadOrden, setDataActividadOrden] = useState(null);
 
   const [change, setChange] = useState(false);
 
@@ -102,9 +103,9 @@ const ShowModeOrden = ({ payload, setOpen }) => {
     const getData = async () => {
       setOpen(true);
       await new Promise((resolve) => setTimeout(resolve, timeWait));
-      const rs = await getApi("/m_ordenes/" + id, data.token);
-      setDataActividad(rs.part1);
-      setDataOrden(rs.part2);
+      const rs = await getApi("/m_reportes/" + id, data.token);
+      setDataReporte(rs.part1);
+      setDataActividadOrden(rs.part2);
       setOpen(false);
     };
     getData();
@@ -113,12 +114,12 @@ const ShowModeOrden = ({ payload, setOpen }) => {
   return (
     <Box m="20px">
       <Header
-        title={"Ver Orden de Mantenimiento Nro: " + id}
-        subtitle="Formato de Orden de Mantenimiento"
+        title={"Ver Reporte de Mantenimiento Nro: " + id}
+        subtitle="Formato de Reporte de Mantenimiento"
         search
-        titulo="Buscar por Numero de Orden"
-        placeholder="Buscar Orden"
-        link="/app/maintenance/order/show/"
+        titulo="Buscar por Numero de Reporte"
+        placeholder="Buscar Reporte"
+        link="/app/maintenance/report/show/"
         setChange={setChange}
       />
       <Box
@@ -157,7 +158,7 @@ const ShowModeOrden = ({ payload, setOpen }) => {
         }}
       >
         <PDFViewer width="100%" height="100%" showToolbar>
-          {dataActividad != null ? (
+          {dataReporte != null ? (
             <Document
               pdfVersion="1.7ext3"
               creator="Servicentro Avila"
@@ -181,104 +182,140 @@ const ShowModeOrden = ({ payload, setOpen }) => {
                     style={{ width: 100, border: "3px solid black" }}
                   />
                   <Text style={styles.title}>
-                    Orden de Mantenimiento Nro {id}
+                    Reporte de Mantenimiento Nro {id}
                   </Text>
                   <Text style={{ fontSize: 9 }}>
                     Fecha : {new Date().toLocaleString()}
                   </Text>
                 </View>
 
-                {/* Informacion de la Orden  */}
+                {/* Informacion del Reporte  */}
                 <View style={styles.section}>
                   <Text style={styles.subtitulo}>
                     1. Informacion de la Orden de Mantenimiento{" "}
                   </Text>
                   <Text style={styles.texto}>
-                    1.1. Encargado de la Orden : {dataActividad.nombre}
+                    1.1. Encargado de la Orden : {dataReporte.nombre}
                   </Text>
                   <Text style={styles.texto}>
-                    1.2. Cargo del Encargado : {dataActividad.cargo}
+                    1.2. Cargo del Encargado : {dataReporte.cargo}
                   </Text>
                   <Text style={styles.texto}>
                     1.3. Inicio Propuesto de Orden :{" "}
-                    {getLocalDate(dataActividad.inicio_ordenes)}
+                    {getLocalDate(dataReporte.inicio_ordenes)}
                   </Text>
                   <Text style={styles.texto}>
                     1.4. Fin Propuesto de Orden :{" "}
-                    {getLocalDate(dataActividad.fin_ordenes)}
+                    {getLocalDate(dataReporte.fin_ordenes)}
                   </Text>
                   <Text style={styles.texto}>
-                    1.5. Estado de la Orden :{" "}
-                    {dataActividad.estado ? "Completado" : "Incompleto"}
+                    1.5. Inicio Real del Reporte de Mantenimiento :{" "}
+                    {getLocalDate(dataReporte.inicio_reportes)}
                   </Text>
                   <Text style={styles.texto}>
-                    1.6. Solicitud de Seguimiento :{" "}
-                    {dataActividad.id_solicitudes != null
-                      ? "Solicitud Nro  " + dataActividad.id_solicitudes
+                    1.6. Fin Real del Reporte de Mantenimiento :{" "}
+                    {getLocalDate(dataReporte.fin_reportes)}
+                  </Text>
+                  <Text style={styles.texto}>
+                    1.7. Duracion de la Orden de Mantenimiento :{" "}
+                    {dataReporte.duracion_reportes} minutos
+                  </Text>
+                  <Text style={styles.texto}>
+                    1.8. Solicitud de Seguimiento :{" "}
+                    {dataReporte.id_solicitudes != null
+                      ? "Solicitud Nro " + dataReporte.id_solicitudes
                       : "No tiene Solicitud de Seguimiento"}
                   </Text>
                   <Text style={styles.texto}>
-                    1.7. Reporte de trabajo :{" "}
-                    {dataActividad.id_reportes != null
-                      ? "Reporte Nro  " + dataActividad.id_reportes
-                      : "No tiene Reporte de Mantenimiento"}
+                    1.9. Orden de Mantenimiento : Orden Nro{" "}
+                    {dataReporte.id_ordenes}
                   </Text>
                   <Text style={styles.texto}>
-                    1.8. Descripcion de la Orden : {dataActividad.descripcion}
+                    1.10. Descripcion de la Orden : {dataReporte.descripcion}
                   </Text>
                 </View>
 
                 <View style={styles.section}>
                   <Text style={styles.subtitulo}>
-                    2. Actividades a Realizarse{" "}
+                    2. Actividades Realizadas
                   </Text>
 
-                  {dataOrden.map((row, iter) => {
+                  {dataActividadOrden.map((row, iter) => {
                     const number = iter + 1;
                     return (
                       <View key={iter}>
-                        <Text style={styles.subtitulo}>
-                          2.{number}. {row.titulo}
-                        </Text>
-                        <Text style={styles.texto}>
-                          {number}.1. Sistema y Ubicacion: {row.sistemas_nombre}{" "}
-                          - {row.ubicacion_nombre}
-                        </Text>
-                        <Text style={styles.texto}>
-                          {number}.2. Equipo/Unidad : {row.unidades_nombre} -{" "}
-                          {row.codigo_unidades}
-                        </Text>
-                        <Text style={styles.texto}>
-                          {number}.3. Parte : {row.partes_nombre} -{" "}
-                          {row.codigo_partes}
-                        </Text>
-                        <Text style={styles.texto}>
-                          {number}.4. Duracion : {row.duracion} minutos
-                        </Text>
-                        <Text style={styles.texto}>
-                          {number}.5. Tipo :{" "}
-                          {row.tipo && searchArray(row.tipo, tipo)}
-                        </Text>
-                        <Text style={styles.texto}>
-                          {number}.6. Prioridad :{" "}
-                          {row.prioridad &&
-                            searchArray(row.prioridad, prioridad)}
-                        </Text>
-                        <Text style={styles.texto}>
-                          {number}.7. Procedimiento : {row.procedimiento}
-                        </Text>
-                        <Text style={styles.texto}>
-                          {number}.8. Variables a tomar en cuenta:
-                        </Text>
-                        {row.variables != null
-                          ? Object.entries(row.variables).map((row, iter) => {
-                              return (
-                                <Text key={iter} style={styles.textoP}>
-                                  {number}.6.{iter + 1}. {row[0]} : {row[1]}
-                                </Text>
-                              );
-                            })
-                          : null}
+                        {row.estado ? (
+                          <>
+                            <Text style={styles.subtitulo}>
+                              2.{number}. {row.titulo}
+                            </Text>
+                            <Text style={styles.texto}>
+                              {number}.1. Sistema y Ubicacion:{" "}
+                              {row.sistemas_nombre}
+                            </Text>
+                            <Text style={styles.texto}>
+                              {number}.2. Equipo/Unidad : {row.unidades_nombre}
+                            </Text>
+                            <Text style={styles.texto}>
+                              {number}.3. Parte : {row.partes_nombre}
+                            </Text>
+                            <Text style={styles.texto}>
+                              {number}.4. Codigo Parte : {row.codigo_c}
+                            </Text>
+                            <Text style={styles.texto}>
+                              {number}.5. Duracion : {row.duracion} minutos
+                            </Text>
+                            <Text style={styles.texto}>
+                              {number}.6. Tipo :{" "}
+                              {row.tipo && searchArray(row.tipo, tipo)}
+                            </Text>
+                            <Text style={styles.texto}>
+                              {number}.7. Prioridad :{" "}
+                              {row.prioridad &&
+                                searchArray(row.prioridad, prioridad)}
+                            </Text>
+                            <Text style={styles.texto}>
+                              {number}.8. Procedimiento : {row.procedimiento}
+                            </Text>
+                            <Text style={styles.texto}>
+                              {number}.9. Variables a tomar en cuenta:
+                            </Text>
+                            {row.variables != null
+                              ? Object.entries(row.variables).map(
+                                  (row, iter) => {
+                                    return (
+                                      <Text key={iter} style={styles.textoP}>
+                                        {number}.6.{iter + 1}. {row[0]} :{" "}
+                                        {row[1]}
+                                      </Text>
+                                    );
+                                  }
+                                )
+                              : null}
+                            <Text style={styles.texto}>
+                              {number}.10. Variables anotadas:
+                            </Text>
+                            {row.info != null
+                              ? Object.entries(row.info).map((row, iter) => {
+                                  return (
+                                    <Text key={iter} style={styles.textoP}>
+                                      {number}.6.{iter + 1}. {row[0]} : {row[1]}
+                                    </Text>
+                                  );
+                                })
+                              : null}
+                          </>
+                        ) : (
+                          <>
+                            <Text style={styles.subtitulo}>
+                              2.{number}. {row.titulo}
+                            </Text>
+                            <Text style={styles.texto}>
+                              {number}.1. No se desarrollo esta actividad :
+                              ID_ACT_ORD {row.id_act_ord}
+                            </Text>
+                          </>
+                        )}
                       </View>
                     );
                   })}
@@ -300,7 +337,7 @@ const ShowModeOrden = ({ payload, setOpen }) => {
   );
 };
 
-export default ShowModeOrden;
+export default ShowMoreReporte;
 
 const styles = StyleSheet.create({
   page: {
@@ -325,6 +362,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     lineHeight: 1.5,
     marginBottom: 5,
+    marginTop: 5,
   },
   texto: {
     fontSize: 11,

@@ -9,13 +9,10 @@ import { useEffect, useState } from "react";
 import { getApi } from "../../tools/mantenimiento-api.js";
 import {
   CheckCircleOutline,
-  CropSquareOutlined,
-  CropSquareSharp,
   ErrorOutline,
   SearchOutlined,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { searchArray } from "../../tools/extra.js";
 
 const ShowOrden = ({ payload, setOpen }) => {
   const theme = useTheme();
@@ -102,7 +99,11 @@ const ShowOrden = ({ payload, setOpen }) => {
       flex: 1,
       headerAlign: "center",
       renderCell: (params) => {
-        const permiso = payload.nivel != 1 ? true : false;
+        let permiso = payload.nombre != params.row.nombre ? true : false;
+
+        permiso = payload.nivel === 1 ? false : permiso;
+        permiso = payload.nivel === 2 ? false : permiso;
+
         return (
           <Button
             type="button"

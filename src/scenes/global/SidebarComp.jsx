@@ -203,14 +203,14 @@ const SidebarComp = ({ payload }) => {
             <SubMenu label="Reportes" icon={<DocumentScannerOutlined />}>
               <Item
                 title="Crear Reporte"
-                to="#"
+                to="/maintenance/report/create/"
                 icon={<PostAddOutlined />}
                 selected={selected}
                 setSelected={setSelected}
               />
               <Item
                 title="Ver Reporte"
-                to="#"
+                to="/maintenance/report/show/"
                 icon={<ListAltOutlined />}
                 selected={selected}
                 setSelected={setSelected}
@@ -219,7 +219,7 @@ const SidebarComp = ({ payload }) => {
 
             <Item
               title="Calendario"
-              to="#"
+              to="/calendar/"
               icon={<CalendarToday />}
               selected={selected}
               setSelected={setSelected}
