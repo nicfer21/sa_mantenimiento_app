@@ -1,282 +1,552 @@
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+/* eslint-disable react/prop-types */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Box, Button, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import { mockTransactions } from "../../data/mockData";
-import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import EmailIcon from "@mui/icons-material/Email";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import TrafficIcon from "@mui/icons-material/Traffic";
+
 import Header from "../../components/Header";
-import LineChart from "../../components/LineChart";
-import GeographyChart from "../../components/GeographyChart";
+
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
-import ProgressCircle from "../../components/ProgressCircle";
 
-const Dashboard = () => {
+import { useEffect } from "react";
+import { useState } from "react";
+import { getApi } from "../../tools/mantenimiento-api";
+import { useNavigate } from "react-router-dom";
+import {
+  AccessTimeOutlined,
+  ChromeReaderModeOutlined,
+  EmailOutlined,
+} from "@mui/icons-material";
+
+const Dashboard = ({ payload, setOpen }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const navigate = useNavigate();
+
+  const timeWait = 1000;
+
+  const [data, setData] = useState({});
+  const [dataDashboard, setDataDashboard] = useState({});
+  const [propiusData, setPropiusData] = useState({});
+
+  const mesAct =
+    "Informacion del actual mes " +
+    (new Date().getMonth() + 1) +
+    " del año " +
+    new Date().getFullYear();
+
+  const goOrden = (orden) => {
+    const link = "/app/maintenance/order/show/" + orden;
+    navigate(link);
+  };
+
+  useEffect(() => {
+    setOpen(false);
+    setData(payload);
+  }, [payload]);
+
+  useEffect(() => {
+    const getData = async () => {
+      setOpen(true);
+      await new Promise((resolve) => setTimeout(resolve, timeWait));
+      const rs = await getApi("/dashboard/", data.token);
+      if (data.nivel === 3) {
+        const rs1 = await getApi(
+          `/dashboard/${data.id_trabajadores}`,
+          data.token
+        );
+        setPropiusData(rs1);
+      }
+      setDataDashboard(rs);
+      await new Promise((resolve) => setTimeout(resolve, timeWait));
+      setOpen(false);
+    };
+
+    getData();
+  }, [data]);
+
   return (
     <Box m="20px">
-      {/* HEADER */}
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
+      <Header title="DASHBOARD" subtitle={mesAct} />
 
-        <Box>
-          <Button
-            sx={{
-              backgroundColor: colors.blueAccent[700],
-              color: colors.grey[100],
-              fontSize: "14px",
-              fontWeight: "bold",
-              padding: "10px 20px",
-            }}
-          >
-            <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-            Download Reports
-          </Button>
-        </Box>
-      </Box>
-
-      {/* GRID & CHARTS */}
-      <Box
-        display="grid"
-        gridTemplateColumns="repeat(12, 1fr)"
-        gridAutoRows="140px"
-        gap="20px"
-      >
-        {/* ROW 1 */}
+      {dataDashboard.recSolicitudes != undefined ? (
         <Box
-          gridColumn="span 3"
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
+          display="grid"
+          gridTemplateColumns="repeat(12, 1fr)"
+          gridAutoRows="140px"
+          gap="20px"
         >
-          <StatBox
-            title="12,361"
-            subtitle="Emails Sent"
-            progress="0.75"
-            increase="+14%"
-            icon={
-              <EmailIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
-        <Box
-          gridColumn="span 3"
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StatBox
-            title="431,225"
-            subtitle="Sales Obtained"
-            progress="0.50"
-            increase="+21%"
-            icon={
-              <PointOfSaleIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
-        <Box
-          gridColumn="span 3"
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StatBox
-            title="32,441"
-            subtitle="New Clients"
-            progress="0.30"
-            increase="+5%"
-            icon={
-              <PersonAddIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
-        <Box
-          gridColumn="span 3"
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StatBox
-            title="1,325,134"
-            subtitle="Traffic Received"
-            progress="0.80"
-            increase="+43%"
-            icon={
-              <TrafficIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
-
-        {/* ROW 2 */}
-        <Box
-          gridColumn="span 8"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-        >
-          <Box
-            mt="25px"
-            p="0 30px"
-            display="flex "
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Box>
-              <Typography
-                variant="h5"
-                fontWeight="600"
-                color={colors.grey[100]}
+          {data.nivel != 3 ? (
+            <>
+              {/* Card Resumen Avance Orden de Mantenimiento */}
+              <Box
+                gridColumn="span 4"
+                backgroundColor={colors.primary[400]}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
               >
-                Revenue Generated
-              </Typography>
-              <Typography
-                variant="h3"
-                fontWeight="bold"
-                color={colors.greenAccent[500]}
-              >
-                $59,342.32
-              </Typography>
-            </Box>
-            <Box>
-              <IconButton>
-                <DownloadOutlinedIcon
-                  sx={{ fontSize: "26px", color: colors.greenAccent[500] }}
+                <StatBox
+                  title={
+                    dataDashboard.countOrdenToday > 0
+                      ? dataDashboard.countOrdenToday
+                      : "No hay Ordenes"
+                  }
+                  subtitle="Ordenes de Mantenimiento Hoy"
+                  progress={
+                    dataDashboard.countOrdenToday > 0
+                      ? parseInt(dataDashboard.countReportToday) /
+                        parseInt(dataDashboard.countOrdenToday)
+                      : "-"
+                  }
+                  increase={
+                    (dataDashboard.countOrdenToday > 0
+                      ? (parseInt(dataDashboard.countReportToday) /
+                          parseInt(dataDashboard.countOrdenToday)) *
+                        100
+                      : "-") + "%"
+                  }
+                  icon={
+                    <EmailOutlined
+                      sx={{ color: colors.greenAccent[300], fontSize: "26px" }}
+                    />
+                  }
                 />
-              </IconButton>
-            </Box>
-          </Box>
-          <Box height="250px" m="-20px 0 0 0">
-            <LineChart isDashboard={true} />
-          </Box>
-        </Box>
-        <Box
-          gridColumn="span 4"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-          overflow="auto"
-        >
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            borderBottom={`4px solid ${colors.primary[500]}`}
-            colors={colors.grey[100]}
-            p="15px"
-          >
-            <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
-              Recent Transactions
-            </Typography>
-          </Box>
-          {mockTransactions.map((transaction, i) => (
-            <Box
-              key={`${transaction.txId}-${i}`}
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              borderBottom={`4px solid ${colors.primary[500]}`}
-              p="15px"
-            >
-              <Box>
+              </Box>
+
+              {/* Card Carga de Trabajo */}
+              <Box
+                gridColumn="span 4"
+                backgroundColor={colors.primary[400]}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <StatBox
+                  title={
+                    (dataDashboard.duracionOrdenToday > 0
+                      ? dataDashboard.duracionOrdenToday
+                      : "No hay Carga para Hoy") + " minutos"
+                  }
+                  subtitle="Carga de Trabajo Hoy"
+                  progress={
+                    dataDashboard.duracionOrdenToday > 0
+                      ? parseInt(dataDashboard.duracionReportToday) /
+                        parseInt(dataDashboard.duracionOrdenToday)
+                      : "-"
+                  }
+                  increase={
+                    (dataDashboard.duracionOrdenToday > 0
+                      ? (parseInt(dataDashboard.duracionReportToday) /
+                          parseInt(dataDashboard.duracionOrdenToday)) *
+                        100
+                      : "-") + "%"
+                  }
+                  icon={
+                    <AccessTimeOutlined
+                      sx={{ color: colors.greenAccent[300], fontSize: "26px" }}
+                    />
+                  }
+                />
+              </Box>
+
+              {/* Avance de la planificacion */}
+              <Box
+                gridColumn="span 4"
+                backgroundColor={colors.primary[400]}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <StatBox
+                  title={
+                    (dataDashboard.countOrdenMonth > 0
+                      ? (parseInt(dataDashboard.countReportMonth) /
+                          parseInt(dataDashboard.countOrdenMonth)) *
+                        100
+                      : "-") + " %"
+                  }
+                  subtitle="Avance del Plan Mensual"
+                  progress={
+                    dataDashboard.countOrdenMonth > 0
+                      ? parseInt(dataDashboard.countReportMonth) /
+                        parseInt(dataDashboard.countOrdenMonth)
+                      : "-"
+                  }
+                  increase={""}
+                  icon={
+                    <ChromeReaderModeOutlined
+                      sx={{ color: colors.greenAccent[300], fontSize: "26px" }}
+                    />
+                  }
+                />
+              </Box>
+
+              {/* Ordenes de mantenimiento para hoy*/}
+              <Box
+                gridColumn="span 12"
+                gridRow="span 2"
+                backgroundColor={colors.primary[400]}
+                overflow="auto"
+              >
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  borderBottom={`4px solid ${colors.primary[500]}`}
+                  colors={colors.grey[100]}
+                  p="15px"
+                >
+                  <Typography
+                    color={colors.grey[100]}
+                    variant="h5"
+                    fontWeight="600"
+                  >
+                    Ordenes de Mantenimiento para el día de hoy :{" "}
+                    {new Date().toLocaleDateString()}
+                  </Typography>
+                </Box>
+                {dataDashboard.recOrdenesHoy.map((row, i) => (
+                  <Box
+                    key={i}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    borderBottom={"4px solid " + colors.primary[500]}
+                    p="15px"
+                  >
+                    <Box>
+                      <Typography color={colors.grey[100]}>
+                        {row.titulo}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography color={colors.grey[100]}>
+                        {new Date(row.fecha).toLocaleTimeString()}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography color={colors.grey[100]}>
+                        {row.nombre}
+                      </Typography>
+                    </Box>
+
+                    {row.estado ? (
+                      <Box
+                        backgroundColor={colors.greenAccent[500]}
+                        p="5px 10px"
+                        borderRadius="4px"
+                      >
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            goOrden(row.jump);
+                          }}
+                        >
+                          Completado
+                        </Button>
+                      </Box>
+                    ) : (
+                      <Box
+                        backgroundColor={colors.redAccent[500]}
+                        p="5px 10px"
+                        borderRadius="4px"
+                        onClick={() => {
+                          goOrden(row.jump);
+                        }}
+                      >
+                        <Button size="small">Incompleto</Button>
+                      </Box>
+                    )}
+                  </Box>
+                ))}
+              </Box>
+
+              {/* BarChart Cantidad de Actividades de las Ordenes */}
+              <Box
+                gridColumn="span 12"
+                gridRow="span 2"
+                backgroundColor={colors.primary[400]}
+              >
                 <Typography
-                  color={colors.greenAccent[500]}
                   variant="h5"
                   fontWeight="600"
+                  sx={{ padding: "30px 30px 0 30px" }}
                 >
-                  {transaction.txId}
+                  Cantidad de Actividades de Mantenimiento en el actual mes
                 </Typography>
-                <Typography color={colors.grey[100]}>
-                  {transaction.user}
-                </Typography>
+                <Box height="250px" mt="-20px">
+                  <BarChart
+                    isDashboard={true}
+                    dataBar={dataDashboard.cantidadActividades}
+                    keysBar={["Nro Actividades"]}
+                    indexBar={"Tipo"}
+                  />
+                </Box>
               </Box>
-              <Box color={colors.grey[100]}>{transaction.date}</Box>
-              <Box
-                backgroundColor={colors.greenAccent[500]}
-                p="5px 10px"
-                borderRadius="4px"
-              >
-                ${transaction.cost}
-              </Box>
-            </Box>
-          ))}
-        </Box>
 
-        {/* ROW 3 */}
-        <Box
-          gridColumn="span 4"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-          p="30px"
-        >
-          <Typography variant="h5" fontWeight="600">
-            Campaign
-          </Typography>
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            mt="25px"
-          >
-            <ProgressCircle size="125" />
-            <Typography
-              variant="h5"
-              color={colors.greenAccent[500]}
-              sx={{ mt: "15px" }}
-            >
-              $48,352 revenue generated
-            </Typography>
-            <Typography>Includes extra misc expenditures and costs</Typography>
-          </Box>
+              {/* Recuento de Solicitudes por mes */}
+              <Box
+                gridColumn="span 4"
+                gridRow="span 2"
+                backgroundColor={colors.primary[400]}
+                overflow="auto"
+              >
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  borderBottom={`4px solid ${colors.primary[500]}`}
+                  colors={colors.grey[100]}
+                  p="15px"
+                >
+                  <Typography
+                    color={colors.grey[100]}
+                    variant="h5"
+                    fontWeight="600"
+                  >
+                    Recuento de Solicitudes de Mantenimiento del actual mes
+                  </Typography>
+                </Box>
+                {dataDashboard.recSolicitudes.map((row, i) => (
+                  <Box
+                    key={`${row.txId}-${i}`}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    borderBottom={`4px solid ${colors.primary[500]}`}
+                    p="15px"
+                  >
+                    <Box>
+                      <Typography color={colors.grey[100]}>
+                        {row.unidad}
+                      </Typography>
+                    </Box>
+
+                    <Box
+                      backgroundColor={colors.redAccent[500]}
+                      p="5px 10px"
+                      borderRadius="4px"
+                    >
+                      {row.cantidad}
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+
+              {/* BarChart Cantidad de SOlicitudes por Equipo/Unidad */}
+              <Box
+                gridColumn="span 8"
+                gridRow="span 2"
+                backgroundColor={colors.primary[400]}
+              >
+                <Typography
+                  variant="h5"
+                  fontWeight="600"
+                  sx={{ padding: "30px 30px 0 30px" }}
+                >
+                  Cantidad de Solicitudes por Equipo/Unidad
+                </Typography>
+                <Box height="250px" mt="-20px">
+                  <BarChart
+                    isDashboard={true}
+                    dataBar={dataDashboard.recSolicitudesAll}
+                    keysBar={["cantidad"]}
+                    indexBar={"unidad"}
+                  />
+                </Box>
+              </Box>
+            </>
+          ) : (
+            <>
+              {/* Card Resumen Avance Orden de Mantenimiento */}
+              <Box
+                gridColumn="span 4"
+                backgroundColor={colors.primary[400]}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <StatBox
+                  title={
+                    propiusData.countOrdenToday > 0
+                      ? propiusData.countOrdenToday
+                      : "No hay Ordenes"
+                  }
+                  subtitle="Ordenes de Mantenimiento Hoy"
+                  progress={
+                    propiusData.countOrdenToday > 0
+                      ? parseInt(propiusData.countReportToday) /
+                        parseInt(propiusData.countOrdenToday)
+                      : "-"
+                  }
+                  increase={
+                    (propiusData.countOrdenToday > 0
+                      ? (parseInt(propiusData.countReportToday) /
+                          parseInt(propiusData.countOrdenToday)) *
+                        100
+                      : "-") + "%"
+                  }
+                  icon={
+                    <EmailOutlined
+                      sx={{ color: colors.greenAccent[300], fontSize: "26px" }}
+                    />
+                  }
+                />
+              </Box>
+
+              {/* Card Carga de Trabajo */}
+              <Box
+                gridColumn="span 4"
+                backgroundColor={colors.primary[400]}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <StatBox
+                  title={
+                    (propiusData.duracionOrdenToday > 0
+                      ? propiusData.duracionOrdenToday
+                      : "No hay Carga para Hoy") + " minutos"
+                  }
+                  subtitle="Carga de Trabajo Hoy"
+                  progress={
+                    propiusData.duracionOrdenToday > 0
+                      ? parseInt(propiusData.duracionReportToday) /
+                        parseInt(propiusData.duracionOrdenToday)
+                      : "-"
+                  }
+                  increase={
+                    (propiusData.duracionOrdenToday > 0
+                      ? (parseInt(propiusData.duracionReportToday) /
+                          parseInt(propiusData.duracionOrdenToday)) *
+                        100
+                      : "-") + "%"
+                  }
+                  icon={
+                    <AccessTimeOutlined
+                      sx={{ color: colors.greenAccent[300], fontSize: "26px" }}
+                    />
+                  }
+                />
+              </Box>
+
+              {/* Avance de la planificacion */}
+              <Box
+                gridColumn="span 4"
+                backgroundColor={colors.primary[400]}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <StatBox
+                  title={
+                    (propiusData.countOrdenMonth > 0
+                      ? (parseInt(propiusData.countReportMonth) /
+                          parseInt(propiusData.countOrdenMonth)) *
+                        100
+                      : "-") + " %"
+                  }
+                  subtitle="Avance del Plan Mensual"
+                  progress={
+                    propiusData.countOrdenMonth > 0
+                      ? parseInt(propiusData.countReportMonth) /
+                        parseInt(propiusData.countOrdenMonth)
+                      : "-"
+                  }
+                  increase={""}
+                  icon={
+                    <ChromeReaderModeOutlined
+                      sx={{ color: colors.greenAccent[300], fontSize: "26px" }}
+                    />
+                  }
+                />
+              </Box>
+
+              {/* Ordenes de mantenimiento para hoy*/}
+              <Box
+                gridColumn="span 12"
+                gridRow="span 2"
+                backgroundColor={colors.primary[400]}
+                overflow="auto"
+              >
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  borderBottom={`4px solid ${colors.primary[500]}`}
+                  colors={colors.grey[100]}
+                  p="15px"
+                >
+                  <Typography
+                    color={colors.grey[100]}
+                    variant="h5"
+                    fontWeight="600"
+                  >
+                    Ordenes de Mantenimiento para el día de hoy :{" "}
+                    {new Date().toLocaleDateString()}
+                  </Typography>
+                </Box>
+                {propiusData.recOrdenesHoy.map((row, i) => (
+                  <Box
+                    key={i}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    borderBottom={"4px solid " + colors.primary[500]}
+                    p="15px"
+                  >
+                    <Box>
+                      <Typography color={colors.grey[100]}>
+                        {row.titulo}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography color={colors.grey[100]}>
+                        {new Date(row.fecha).toLocaleTimeString()}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography color={colors.grey[100]}>
+                        {row.nombre}
+                      </Typography>
+                    </Box>
+
+                    {row.estado ? (
+                      <Box
+                        backgroundColor={colors.greenAccent[500]}
+                        p="5px 10px"
+                        borderRadius="4px"
+                      >
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            goOrden(row.jump);
+                          }}
+                        >
+                          Completado
+                        </Button>
+                      </Box>
+                    ) : (
+                      <Box
+                        backgroundColor={colors.redAccent[500]}
+                        p="5px 10px"
+                        borderRadius="4px"
+                        onClick={() => {
+                          goOrden(row.jump);
+                        }}
+                      >
+                        <Button size="small">Incompleto</Button>
+                      </Box>
+                    )}
+                  </Box>
+                ))}
+              </Box>
+            </>
+          )}
         </Box>
-        <Box
-          gridColumn="span 4"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-        >
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            sx={{ padding: "30px 30px 0 30px" }}
-          >
-            Sales Quantity
-          </Typography>
-          <Box height="250px" mt="-20px">
-            <BarChart isDashboard={true} />
-          </Box>
-        </Box>
-        <Box
-          gridColumn="span 4"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-          padding="30px"
-        >
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            sx={{ marginBottom: "15px" }}
-          >
-            Geography Based Traffic
-          </Typography>
-          <Box height="200px">
-            <GeographyChart isDashboard={true} />
-          </Box>
-        </Box>
-      </Box>
+      ) : null}
     </Box>
   );
 };

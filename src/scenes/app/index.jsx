@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
@@ -150,7 +151,10 @@ const AppScreen = () => {
           <main className="content">
             <Topbar setIsSidebar={setIsSidebar} />
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route
+                path="/"
+                element={<Dashboard payload={payload} setOpen={setOpen} />}
+              />
 
               {/* All routes */}
 

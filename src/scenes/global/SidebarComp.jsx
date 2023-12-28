@@ -269,11 +269,6 @@ const SidebarComp = ({ payload }) => {
                 </SubMenu>
               ) : null)}
 
-            <SubMenu
-              label="Inventarios"
-              icon={<DocumentScannerOutlined />}
-            ></SubMenu>
-
             <Item
               title="Mi Perfil"
               to="/myprofile/"
