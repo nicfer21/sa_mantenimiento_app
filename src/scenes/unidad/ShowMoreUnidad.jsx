@@ -17,6 +17,16 @@ import { useParams } from "react-router-dom";
 import { useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 
+import "reactflow/dist/style.css";
+
+import ReactFlow, {
+  MiniMap,
+  Controls,
+  Background,
+  useNodesState,
+  useEdgesState,
+} from "reactflow";
+
 //Icons
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { getApi } from "../../tools/mantenimiento-api.js";
@@ -74,6 +84,19 @@ const ShowSubParts = ({ idParte, token, colors, timeWait }) => {
         </Typography>
       )}
     </Box>
+  );
+};
+
+const ShowDiagram = ({ dataNodes, dataEdges }) => {
+  const [nodes] = useNodesState(dataNodes);
+  const [edges] = useEdgesState(dataEdges);
+
+  return (
+    <ReactFlow nodes={nodes} edges={edges} fitView>
+      <Controls />
+      <MiniMap />
+      <Background variant="dots" gap={10} size={1} />
+    </ReactFlow>
   );
 };
 
@@ -139,9 +162,6 @@ const ShowMoreUnidad = ({ payload, setOpen }) => {
         data.token
       );
       setDataDiagram(dataDiagram);
-      if (dataDiagram.edges != undefined) {
-        console.log(dataDiagram);
-      }
       setDataUnidad(rsUnidad);
     };
 
@@ -259,7 +279,12 @@ const ShowMoreUnidad = ({ payload, setOpen }) => {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Box sx={{ display: "flex", flexDirection: "row" }}></Box>
+            <div style={{ width: "100%", height: "400px" }}>
+              <ShowDiagram
+                dataEdges={dataDiagram.edges}
+                dataNodes={dataDiagram.nodes}
+              />
+            </div>
           </AccordionDetails>
         </Accordion>
       ) : null}
