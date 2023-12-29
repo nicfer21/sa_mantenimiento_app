@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
   Typography,
@@ -14,7 +13,7 @@ import {
 import { tokens } from "../../theme.js";
 import Header from "../../components/Header.jsx";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 
@@ -94,6 +93,8 @@ const ShowMoreUnidad = ({ payload, setOpen }) => {
   const [dataUnidad, setDataUnidad] = useState({});
   const [dataPartes, setDataPartes] = useState({});
 
+  const [dataDiagram, setDataDiagram] = useState({});
+
   const { id } = useParams();
   const timeWait = 1750;
 
@@ -107,6 +108,7 @@ const ShowMoreUnidad = ({ payload, setOpen }) => {
       setOpen(true);
       await new Promise((resolve) => setTimeout(resolve, timeWait));
       const rs = await getApi("/e_unidades/code/" + id, data.token);
+
       setDataCodeUsuario(rs);
       await new Promise((resolve) => setTimeout(resolve, timeWait));
       setOpen(false);
@@ -120,6 +122,7 @@ const ShowMoreUnidad = ({ payload, setOpen }) => {
         "/e_sistemas/" + dataCodeUsuario.id_sistemas,
         data.token
       );
+
       setDataSistemas(rsSistemas);
     };
     getData();
@@ -131,8 +134,15 @@ const ShowMoreUnidad = ({ payload, setOpen }) => {
         "/e_unidades/" + dataCodeUsuario.id_unidades,
         data.token
       );
+      const dataDiagram = await getApi(
+        "/e_unidades/diagram/" + dataCodeUsuario.id_unidades,
+        data.token
+      );
+      setDataDiagram(dataDiagram);
+      if (dataDiagram.edges != undefined) {
+        console.log(dataDiagram);
+      }
       setDataUnidad(rsUnidad);
-      console.log(rsUnidad);
     };
 
     getData();
@@ -181,7 +191,7 @@ const ShowMoreUnidad = ({ payload, setOpen }) => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Box sx={{ display: "flex", flexDirection: "rowF" }}>
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
             <Box>
               <Grid container spacing={2}>
                 <RowPerfil
@@ -233,6 +243,27 @@ const ShowMoreUnidad = ({ payload, setOpen }) => {
         </AccordionDetails>
       </Accordion>
 
+      {/* Diagrama de la Unidad / Equipo */}
+
+      {dataDiagram.edges != undefined ? (
+        <Accordion defaultExpanded>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            sx={{ borderBottom: `3px solid ${colors.primary[900]}` }}
+          >
+            <Typography color={colors.greenAccent[500]} variant="h3">
+              Diagrama de la Unidad/Equipo{" "}
+              <strong style={{ color: colors.greenAccent[300] }}>
+                {dataUnidad.nombre}
+              </strong>
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Box sx={{ display: "flex", flexDirection: "row" }}></Box>
+          </AccordionDetails>
+        </Accordion>
+      ) : null}
+
       {/* Informaciond del unidad/equipos*/}
 
       <Accordion defaultExpanded>
@@ -248,7 +279,7 @@ const ShowMoreUnidad = ({ payload, setOpen }) => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Box sx={{ display: "flex", flexDirection: "rowF" }}>
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
             <Box>
               <Grid container spacing={2}>
                 <RowPerfil
