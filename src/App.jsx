@@ -17,6 +17,7 @@ function App() {
       <Route path="/app/*" element={<AppScreen />} />
       {/* Ruta comodin con "*" */}
       <Route path="*" element={<ErrorScreen />} />
+      
     </Routes>
   );
 }

@@ -100,6 +100,7 @@ const ReportActivityBox = ({ data, setVariable, setEstado }) => {
   return (
     <>
       {dataOrden.map((row, iter) => {
+        console.log(row);
         return (
           <Box
             key={iter}
