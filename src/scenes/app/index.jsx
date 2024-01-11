@@ -118,7 +118,7 @@ const AppScreen = () => {
 
   //Librerar para produccion
 
-  /* useEffect(() => {
+  useEffect(() => {
     const prueba = async () => {
       setSession(payload, "payload");
       const dataRes = await getApi("/prueba/", sessionData);
@@ -140,7 +140,7 @@ const AppScreen = () => {
     return () => {
       clearInterval(pingFun);
     };
-  }, [payload]); */
+  }, [payload]);
 
   return (
     <ColorModeContext.Provider value={colorMode}>
