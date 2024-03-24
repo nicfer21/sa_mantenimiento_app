@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const urlApi =
-  "https://servicentro-avila-mantenimiento-api-dev-hpgp.4.us-1.fl0.io";
+  "https://servicentro-avila-mantenimiento-api-dev-fpja.1.us-1.fl0.io";
 /* export const urlApi = "http://192.168.0.127:5000"; */
 
 export const getApi = async (route = "/", token = "", timeout = 10000) => {
